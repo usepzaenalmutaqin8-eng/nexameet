@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NexaMeet</title>
+<meta name="author" content="Di damel ku Usep Zaenal Mutaqin Ver.06112026">
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2.8.1/dist/livekit-client.umd.min.js"></script>
+<style>
+:root{--pri:#2563EB;--bg:#F8FAFC;--card:#fff;--tx:#1E293B;--mut:#64748B;--dan:#DC2626;--bd:#E2E8F0}
+@media(prefers-color-scheme:dark){:root{--bg:#0B1220;--card:#162033;--tx:#E2E8F0;--mut:#94A3B8;--bd:#263248}}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx)}
+button,input{font:inherit}
+.btn{border:0;border-radius:10px;padding:11px 18px;cursor:pointer;background:var(--pri);color:#fff;font-weight:600}
+.btn.alt{background:var(--card);color:var(--tx);border:1px solid var(--bd)}.btn:disabled{opacity:.6}
+input{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);margin:4px 0 12px}
+.wrap{max-width:900px;margin:0 auto;padding:20px}.logo{font-weight:800;font-size:22px;margin-bottom:20px}.logo span{color:var(--pri)}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+@media(max-width:760px){.hero{grid-template-columns:1fr}}
+h1{font-size:34px;line-height:1.15;margin:0 0 12px}.mut{color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px}
+.av{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:26px;font-weight:700;color:#fff}
+#room{position:fixed;inset:0;background:#0B1220;color:#E2E8F0;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 16px;font-size:14px;background:#0F172A}
+.top a{color:#93C5FD}
+.mid{flex:1;display:flex;min-height:0;position:relative}
+#sidebox{display:contents}
+.grid{flex:1;display:grid;gap:8px;padding:8px;min-width:0;grid-auto-rows:1fr}
+.tile{background:#1E293B;border-radius:12px;position:relative;display:grid;place-items:center;overflow:hidden;min-height:0;border:3px solid transparent}
+.tile.spk{border-color:#16A34A}.tile video{width:100%;height:100%;object-fit:cover}.tile.me video{transform:scaleX(-1)}
+.tile.big{grid-column:1/-1;grid-row:span 2;order:-1}.tile.big video{object-fit:contain;background:#000}
+.nm{position:absolute;left:8px;bottom:8px;background:#000a;padding:3px 8px;border-radius:6px;font-size:12px}
+.side{width:320px;background:#0F172A;border-left:1px solid #263248;display:flex;flex-direction:column}
+@media(max-width:700px){.side{position:absolute;inset:0;width:100%;z-index:5}}
+.side h3{margin:0;padding:12px 14px;border-bottom:1px solid #263248;font-size:15px;display:flex;justify-content:space-between}
+.side a{color:#93C5FD;margin-left:6px}
+.msgs{flex:1;overflow:auto;padding:12px;font-size:14px}.msgs p{margin:0 0 10px}.msgs b{color:#93C5FD}
+.side form,.pl{padding:10px}.side input{background:#1E293B;color:#fff;border-color:#334155;margin:0}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:8px 4px;font-size:14px;border-bottom:1px solid #1E293B;gap:6px}
+.tb{display:flex;justify-content:center;gap:6px;padding:8px;background:#000;flex-wrap:wrap}
+.tb button{background:none;border:0;color:#E2E8F0;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:58px}
+.tb button i{font-style:normal;font-size:20px}.tb button:hover,.tb .on{background:#1E293B}.tb .end{background:var(--dan)}
+.menu{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:#1E293B;border-radius:12px;padding:6px;z-index:9;display:flex}
+.menu button{background:none;border:0;color:#fff;padding:6px 10px;cursor:pointer;font-size:24px}
+.fl{position:fixed;bottom:90px;font-size:34px;animation:up 2.4s ease-out forwards;pointer-events:none;z-index:20}
+@keyframes up{to{transform:translateY(-260px);opacity:0}}
+.toast{position:fixed;top:56px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:8px 16px;border-radius:10px;font-size:14px;z-index:30;max-width:90%}
+.grid.sv{grid-template-rows:minmax(0,4fr) minmax(0,1fr);grid-auto-rows:minmax(0,1fr)}.grid.sv .tile.big{grid-row:1}
+.pop{position:fixed;background:#1E293B;border-radius:10px;padding:6px 0;z-index:40;min-width:240px;max-width:92vw;box-shadow:0 8px 30px #0008;font-size:14px;color:#E2E8F0}
+.pop .it{padding:8px 14px;cursor:pointer}.pop .it:hover{background:#334155}.pop .hd{padding:6px 14px;font-weight:700;font-size:12px;color:#94A3B8}.pop hr{border:0;border-top:1px solid #334155;margin:4px 0}
+.pop .red{color:#fff;background:var(--dan);margin:4px 8px;border-radius:8px;text-align:center}
+.car{min-width:20px!important;padding:6px 0!important;font-size:12px!important}
+.modal{position:fixed;inset:0;background:#0009;z-index:50;display:grid;place-items:center;color:#E2E8F0}.modal>div{background:#1E293B;padding:20px;border-radius:14px;max-width:90vw;line-height:1.8}
+.tile .mx{position:absolute;top:6px;right:6px;background:#000a;border:0;color:#fff;border-radius:6px;padding:3px 8px;cursor:pointer;opacity:0;font-size:15px;z-index:2}
+.tile:hover .mx{opacity:1}@media(hover:none){.tile .mx{opacity:.85}}
+.grid.mxg{grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr)!important}.grid.mxg .tile:not(.mxd){display:none}.tile.mxd{grid-column:1/-1;grid-row:1}.tile.mxd video{object-fit:contain;background:#000}
+#room.mini{inset:auto 12px 12px auto;width:300px;height:200px;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px #000a;z-index:60;cursor:pointer}
+#room.mini .top,#room.mini .tb,#room.mini #sidebox,#room.mini .mx{display:none}#room.mini .grid{padding:0}
+body.minib::after{content:"Meeting berjalan di jendela mini. Klik jendela mini untuk kembali.";position:fixed;left:0;right:0;top:40%;text-align:center;color:var(--mut);padding:20px}
+</style></head><body><div id="app"></div>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+const {Room,RoomEvent,Track,VideoPresets}=LivekitClient;
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const COL=['#2563EB','#16A34A','#F59E0B','#DC2626','#7C3AED','#0891B2'];
+const colr=n=>COL[[...String(n)].reduce((a,c)=>a+c.charCodeAt(0),0)%COL.length];
+const ini=n=>String(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const fmt=id=>id.replace(/^(\d{3})(\d{4})(\d+)$/,'$1 $2 $3');
+const S={name:'',mid:'',pass:'',host:false,chat:[],hands:{},panel:null,left:false,view:'gallery',hideSelf:false,hideNV:false,timer:true,shareOk:true,rec:false,spk:'',mr:null,mx:''};
+let room,tick,t0=0,raf=0,sig='';const T=new Map();
+const DEFAULT_API='https://nexameet-token.usepzaenalmutaqin092.workers.dev';
+function getApi(){let a=DEFAULT_API;try{a=localStorage.getItem('nx_api')||a}catch(e){}
+  if(!a){a=(prompt('Tempel URL Worker token')||'').trim();try{a&&localStorage.setItem('nx_api',a)}catch(e){}}return a}
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
+const isHost=p=>{try{return JSON.parse(p.metadata||'{}').role==='host'}catch(e){return false}};
+
+function home(){
+  app.innerHTML=`<div class="wrap"><div class="logo">Nexa<span>Meet</span></div><div class="hero"><div><h1>Rapat video untuk semua jaringan.</h1><p class="mut">Buat meeting, bagikan ID dan passcode. Peserta dari Wi-Fi, data seluler, HP, atau komputer bisa bergabung.</p></div>
+  <div class="card"><label>Nama Anda</label><input id="n" value="${esc(S.name)}" placeholder="Contoh: Usep">
+  <button class="btn" id="nm" style="width:100%">📹 New Meeting</button><hr style="border:0;border-top:1px solid var(--bd);margin:16px 0">
+  <label>Meeting ID</label><input id="id" inputmode="numeric" placeholder="123 4567 8901"><label>Passcode</label><input id="pc" inputmode="numeric">
+  <button class="btn alt" id="jn" style="width:100%">Join Meeting</button></div></div><p class="mut" style="text-align:center;font-size:13px;margin-top:28px">Di damel ku Usep Zaenal Mutaqin Ver.06112026</p></div>`;
+  const go=async action=>{const n=$('#n').value.trim();if(!n)return toast('Isi nama dulu');S.name=n;
+    if(action==='join'){S.mid=$('#id').value.replace(/\D/g,'');S.pass=$('#pc').value.trim();if(S.mid.length<8)return toast('Meeting ID tidak valid')}
+    const b=$(action==='create'?'#nm':'#jn'),old=b.textContent;b.disabled=true;b.textContent='Menghubungkan...';
+    try{await enter(action)}catch(e){toast(e.message||'Gagal terhubung');b.disabled=false;b.textContent=old}};
+  $('#nm').onclick=()=>go('create');$('#jn').onclick=()=>go('join');
+}
+async function enter(action){
+  const api=getApi();if(!api)throw new Error('URL server token belum diisi');
+  let d;try{const r=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,name:S.name,room:S.mid,pass:S.pass})});d=await r.json();if(!r.ok)throw new Error(d.error||'Ditolak server')}
+  catch(e){throw new Error(e.message==='Failed to fetch'?'Tidak bisa menghubungi server token':e.message)}
+  S.mid=d.room;if(d.pass)S.pass=d.pass;S.host=action==='create';S.chat=[];S.hands={};S.panel=null;S.left=false;
+  room=new Room({adaptiveStream:true,dynacast:true,videoCaptureDefaults:{resolution:VideoPresets.h360}});
+  const E=RoomEvent;
+  [E.ParticipantConnected,E.ParticipantDisconnected,E.TrackMuted,E.TrackUnmuted,E.TrackSubscribed,E.LocalTrackPublished,E.LocalTrackUnpublished,E.ActiveSpeakersChanged,E.ParticipantMetadataChanged,E.ParticipantNameChanged].forEach(e=>room.on(e,update));
+  room.on(E.ParticipantConnected,p=>{toast((p.name||'Peserta')+' bergabung');if(S.hands[room.localParticipant.identity])send({t:'hand',v:1});if(S.host&&!S.shareOk)send({t:'cmd',c:'shareok',v:0})});
+  room.on(E.ParticipantDisconnected,p=>{delete S.hands[p.identity]});
+  room.on(E.TrackSubscribed,(t,pub,p)=>{if(t.kind==='audio'){const a=t.attach();a.dataset.a=p.identity;document.body.appendChild(a)}});
+  room.on(E.TrackUnsubscribed,t=>{if(t.kind==='audio')t.detach().forEach(x=>x.remove());update()});
+  room.on(E.Disconnected,()=>{if(!S.left)leave('Koneksi terputus',1)});
+  room.on(E.ActiveSpeakersChanged,sp=>{if(sp.length&&sp[0].identity!==S.spk){S.spk=sp[0].identity;update()}});
+  room.on(E.DataReceived,onData);
+  await room.connect(d.url,d.token);
+  const lp=room.localParticipant;
+  try{await lp.setMicrophoneEnabled(true)}catch(e){toast('Mikrofon tidak tersedia/diblokir')}
+  try{await lp.setCameraEnabled(true)}catch(e){toast('Kamera tidak tersedia/diblokir')}
+  t0=Date.now();clearInterval(tick);
+  buildRoom();
+  tick=setInterval(()=>{const e=$('#clk');if(e){const s=Math.floor((Date.now()-t0)/1000);e.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}},1000);
+}
+const send=(m,to)=>room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify(m)),to?{reliable:true,destinationIdentities:[to]}:{reliable:true}).catch(()=>{});
+function onData(buf,p){let d;try{d=JSON.parse(new TextDecoder().decode(buf))}catch(e){return}if(!p)return;
+  const me=room.localParticipant.identity;
+  if(d.t==='chat'){const m=String(d.m).slice(0,500);const n=p.name+(d.dm?' (pribadi)':'');S.chat.push({n,m});if(S.panel==='chat')addMsg(n,m);else toast(n+': '+m)}
+  else if(d.t==='rx')fly(String(d.e).slice(0,4));
+  else if(d.t==='hand'){S.hands[p.identity]=!!d.v;update()}
+  else if(d.t==='cmd'&&isHost(p)){
+    if(d.c==='end')leave('Host mengakhiri meeting',1);
+    else if(d.c==='kick'&&d.to===me)leave('Anda dikeluarkan oleh host',1);
+    else if(d.c==='shareok'){S.shareOk=!!d.v;if(!d.v&&room.localParticipant.isScreenShareEnabled)room.localParticipant.setScreenShareEnabled(false);toast(d.v?'Host mengizinkan berbagi layar':'Berbagi layar dinonaktifkan oleh host')}
+    else if(d.c==='mute'&&(!d.to||d.to===me)&&!S.host){room.localParticipant.setMicrophoneEnabled(false);toast('Host mematikan mikrofon Anda')}}}
+
+/* ---- Tampilan: dibangun sekali, lalu hanya diperbarui sebagian (tanpa mengganti elemen video) ---- */
+function buildRoom(){
+  const b=(id,l)=>`<button id="${id}"><i></i><span>${l}</span></button>`,car=id=>`<button class="car" id="${id}">▴</button>`;
+  app.innerHTML=`<div id="room"><div class="top"><span>🛡️ ID ${fmt(S.mid)} · Pass ${esc(S.pass)} <a href="#" id="cp">Salin undangan</a></span><span><b id="recb" hidden style="color:#F87171">● REC </b><a href="#" id="bpip">— Minimize</a> · <a href="#" id="bview">⊞ Tampilan</a> · <span id="clk">00:00</span></span></div>
+  <div class="mid"><div class="grid" id="grid"></div><div id="sidebox"></div></div>
+  <div class="tb">${b('bm','Audio')}${car('cm')}${b('bv','Video')}${car('cv')}${b('bp','Peserta')}${b('bc','Chat')}${b('br','React')}${b('bh','Angkat')}${b('bs','Share')}${S.host?b('bk','Host tools'):''}${b('bmo','More')}<button id="be" class="end"><i>⏻</i><span>${S.host?'End':'Leave'}</span></button></div><div id="menubox"></div></div>`;
+  T.clear();S.panel=null;sig='';
+  const lp=()=>room.localParticipant,f=(id,fn)=>{const e=$('#'+id);if(e)e.onclick=ev=>{ev.preventDefault();fn()}};
+  const tog=async fn=>{try{await fn()}catch(e){toast('Tidak bisa mengakses perangkat')}update()};
+  f('bm',()=>tog(()=>lp().setMicrophoneEnabled(!lp().isMicrophoneEnabled)));
+  f('bv',()=>tog(()=>lp().setCameraEnabled(!lp().isCameraEnabled)));
+  f('bs',()=>{if(!S.host&&!S.shareOk&&!lp().isScreenShareEnabled)return toast('Host tidak mengizinkan berbagi layar');tog(()=>lp().setScreenShareEnabled(!lp().isScreenShareEnabled))});
+  f('bp',()=>openPanel('part'));f('bc',()=>openPanel('chat'));
+  f('br',()=>{const m=$('#menubox');m.innerHTML=m.innerHTML?'':`<div class="menu">${['👍','👏','❤️','😂','🎉'].map(e=>`<button data-e="${e}">${e}</button>`).join('')}</div>`});
+  f('bh',()=>{const id=lp().identity,v=!S.hands[id];S.hands[id]=v;send({t:'hand',v:v?1:0});update()});
+  f('bview',()=>pop('bview',`<div class="hd">Tampilan</div>`+it('view','speaker','Speaker',S.view==='speaker')+it('view','gallery','Gallery',S.view==='gallery')+'<hr>'+it('hs','','Sembunyikan tampilan saya',S.hideSelf)+it('hn','','Sembunyikan peserta tanpa video',S.hideNV)+'<hr>'+it('tm','','Tampilkan timer meeting',S.timer)+it('fs','','Layar penuh'),true));
+  f('cm',async()=>pop('cm',await devs('audioinput','Pilih mikrofon')+'<hr>'+await devs('audiooutput','Pilih speaker')));
+  f('cv',async()=>pop('cv',await devs('videoinput','Pilih kamera')));
+  f('bpip',()=>pip());
+  $('#room').addEventListener('click',e=>{if($('#room').classList.contains('mini')&&!e.target.closest('.top,.tb'))setMini(false)});
+  f('bk',()=>pop('bk',`<div class="hd">Host tools</div>`+it('mall','','Mute semua peserta')+it('sok','','Izinkan peserta berbagi layar',S.shareOk)));
+  f('bmo',()=>pop('bmo',it('rec','',S.rec?'Stop recording':'Record (rekam tab ini)')+it('info','','Info meeting')+it('fs','','Layar penuh')));
+  f('be',()=>pop('be',(S.host?`<div class="it red" data-a="endall">Akhiri meeting untuk semua</div>`:'')+`<div class="it${S.host?'':' red'}" data-a="leave">Tinggalkan meeting</div><div class="it" data-a="x">Batal</div>`));
+  f('cp',()=>{try{navigator.clipboard.writeText(`Bergabung ke NexaMeet\nMeeting ID: ${fmt(S.mid)}\nPasscode: ${S.pass}\nBuka: ${location.href.split('#')[0]}`)}catch(e){}toast('Undangan disalin')});
+  $('#menubox').onclick=e=>{const x=e.target.closest('[data-e]');if(!x)return;send({t:'rx',e:x.dataset.e});fly(x.dataset.e);$('#menubox').innerHTML=''};
+  $('#sidebox').onclick=e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();
+    if(a.dataset.x)openPanel(null);else if(a.dataset.m)send({t:'cmd',c:'mute',to:a.dataset.m});else if(a.dataset.k)send({t:'cmd',c:'kick',to:a.dataset.k})};
+  update();
+}
+function update(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(!room||S.left||!$('#grid'))return;syncTiles();syncBar();syncSide()})}
+function tileFor(k,cls){let t=T.get(k);if(!t){const el=document.createElement('div');el.className='tile '+cls;el.innerHTML='<span class="nm"></span><button class="mx" title="Maximize / Restore">⛶</button>';el.ondblclick=()=>{S.mx=S.mx===k?'':k;update()};el.querySelector('.mx').onclick=ev=>{ev.stopPropagation();S.mx=S.mx===k?'':k;update()};$('#grid').appendChild(el);t={el,nm:el.firstChild,media:null,tr:null,sid:'',an:''};T.set(k,t)}return t}
+function dropMedia(t){if(t.media){try{t.tr&&t.tr.detach(t.media)}catch(e){}t.media.remove()}t.media=null;t.tr=null;t.sid='';t.an=''}
+function setMedia(t,pub,name){
+  const tr=pub&&pub.track&&!pub.isMuted?pub.track:null;
+  if(tr){
+    if(!t.tr||t.tr!==tr||!t.media||t.media.tagName!=='VIDEO'){dropMedia(t);const v=document.createElement('video');v.autoplay=true;v.playsInline=true;v.muted=true;t.el.insertBefore(v,t.nm);tr.attach(v);t.media=v;t.tr=tr}
+  }else if(name!==null){
+    if(t.tr||!t.media){dropMedia(t);const a=document.createElement('div');a.className='av';t.el.insertBefore(a,t.nm);t.media=a}
+    if(t.an!==name){t.an=name;t.media.textContent=ini(name);t.media.style.background=colr(name)}
+  }
+}
+function syncTiles(){
+  const lp=room.localParticipant,ps=[lp,...room.remoteParticipants.values()],keep=new Set();
+  const anyScr=ps.some(p=>p.isScreenShareEnabled),spkId=ps.some(p=>p.identity===S.spk)?S.spk:(ps[1]||lp).identity;
+  ps.forEach(p=>{const me=p===lp,nm=p.name||'Peserta';
+    if(p.isScreenShareEnabled){const k='s:'+p.identity,t=tileFor(k,'big');keep.add(k);setMedia(t,p.getTrackPublication(Track.Source.ScreenShare),null);t.nm.textContent='Layar '+nm}
+    if((me&&S.hideSelf)||(S.hideNV&&!p.isCameraEnabled&&!p.isScreenShareEnabled))return;
+    const k='c:'+p.identity,t=tileFor(k,me?'me':'');keep.add(k);
+    setMedia(t,p.isCameraEnabled?p.getTrackPublication(Track.Source.Camera):null,nm);
+    t.el.classList.toggle('spk',!!p.isSpeaking);t.el.classList.toggle('big',S.view==='speaker'&&!anyScr&&p.identity===spkId);
+    t.nm.textContent=(p.isMicrophoneEnabled?'':'🔇 ')+(S.hands[p.identity]?'✋ ':'')+nm+(me?' (Anda)':'')+(isHost(p)?' · Host':'')});
+  for(const [k,t] of T)if(!keep.has(k)){dropMedia(t);t.el.remove();T.delete(k)}
+  const g=$('#grid'),n=T.size,bigN=[...T.values()].filter(t=>t.el.classList.contains('big')).length;
+  g.classList.toggle('sv',bigN>0);
+  if(S.mx&&!T.has(S.mx))S.mx='';
+  for(const [k,t] of T){t.el.classList.toggle('mxd',k===S.mx);const mb=t.el.querySelector('.mx');if(mb)mb.textContent=k===S.mx?'🗗':'⛶'}
+  g.classList.toggle('mxg',!!S.mx);g.style.gridTemplateColumns=`repeat(${bigN?Math.max(1,Math.min(6,n-bigN)):n<=1?1:n<=4?2:3},1fr)`;
+  
+}
+function syncBar(){
+  const lp=room.localParticipant,n=room.remoteParticipants.size+1,hand=!!S.hands[lp.identity];
+  const set=(id,ic,l,on)=>{const b=$('#'+id);if(!b)return;b.firstChild.textContent=ic;if(l)b.lastChild.textContent=l;b.classList.toggle('on',!!on)};
+  set('bm',lp.isMicrophoneEnabled?'🎤':'🔇');set('bv',lp.isCameraEnabled?'📹':'🚫');set('bp','👥','Peserta '+n,S.panel==='part');
+  set('bc','💬',null,S.panel==='chat');set('br','😀');set('bh','✋',hand?'Turunkan':'Angkat',hand);
+  set('bs','🖥️',lp.isScreenShareEnabled?'Stop Share':'Share',lp.isScreenShareEnabled);set('bk','🛡️');set('bmo','⋯');const rb=$('#recb');if(rb)rb.hidden=!S.rec;const ck=$('#clk');if(ck)ck.style.display=S.timer?'':'none';
+}
+function openPanel(n){
+  S.panel=(n&&S.panel!==n)?n:null;sig='';const sb=$('#sidebox');sb.innerHTML='';
+  if(S.panel==='chat'){
+    sb.innerHTML=`<aside class="side"><h3>Chat <a href="#" data-x="1">✕</a></h3><div class="msgs">${S.chat.map(m=>`<p><b>${esc(m.n)}:</b> ${esc(m.m)}</p>`).join('')}</div><form id="cf"><select id="cto" style="width:100%;margin-bottom:6px;padding:6px;border-radius:8px;background:#1E293B;color:#fff;border:1px solid #334155"></select><input id="ci" placeholder="Ketik pesan..." autocomplete="off"></form></aside>`;
+    const i=$('#ci'),m=$('.msgs');m.scrollTop=m.scrollHeight;i.focus();fillTo();
+    $('#cf').onsubmit=e=>{e.preventDefault();const t=i.value.trim();if(!t)return;const to=$('#cto').value,tn=$('#cto').selectedOptions[0].text,lbl='Anda'+(to?' → '+tn+' (pribadi)':'');S.chat.push({n:lbl,m:t});send({t:'chat',m:t,dm:to?1:0},to);addMsg(lbl,t);i.value=''};
+  }
+  if(S.panel==='part')sb.innerHTML=`<aside class="side"><h3><span id="pt"></span> <a href="#" data-x="1">✕</a></h3><div class="pl" id="plist"></div></aside>`;
+  syncBar();syncSide();
+}
+function syncSide(){
+  if(S.panel==='chat')fillTo();if(S.panel!=='part'||!room)return;
+  const lp=room.localParticipant,ps=[lp,...room.remoteParticipants.values()];
+  const s=ps.map(p=>[p.identity,p.name,p.isMicrophoneEnabled,S.hands[p.identity],isHost(p)].join('|')).join(';');
+  if(s===sig)return;sig=s;$('#pt').textContent='Peserta ('+ps.length+')';
+  $('#plist').innerHTML=ps.map(p=>`<div class="pr"><span>${S.hands[p.identity]?'✋ ':''}${esc(p.name||'Peserta')}${p===lp?' (Anda)':''}${isHost(p)?' · Host':''}</span><span>${p.isMicrophoneEnabled?'🎤':'🔇'}${S.host&&p!==lp?` <a href="#" data-m="${esc(p.identity)}">mute</a><a href="#" data-k="${esc(p.identity)}">keluarkan</a>`:''}</span></div>`).join('');
+}
+function addMsg(n,t){const m=$('.msgs');if(!m)return;const p=document.createElement('p');p.innerHTML=`<b>${esc(n)}:</b> ${esc(t)}`;m.appendChild(p);m.scrollTop=m.scrollHeight}
+function fly(e){const d=document.createElement('div');d.className='fl';d.textContent=e;d.style.left=(30+Math.random()*40)+'%';document.body.appendChild(d);setTimeout(()=>d.remove(),2500)}
+async function leave(msg){
+  if(msg==='all'){msg=null;await send({t:'cmd',c:'end'});await new Promise(r=>setTimeout(r,400))}
+  S.left=true;clearInterval(tick);const dur=Math.max(1,Math.round((Date.now()-t0)/60000));
+  try{room.disconnect()}catch(e){}document.querySelectorAll('audio[data-a]').forEach(a=>a.remove());T.clear();
+  app.innerHTML=`<div class="wrap" style="max-width:520px;text-align:center"><div class="card"><h2>${esc(msg||'Meeting selesai')}</h2><p class="mut">Durasi ${dur} menit.</p><button class="btn" id="hh">Kembali ke Beranda</button></div></div>`;
+  $('#hh').onclick=home;
+}
+function fillTo(){const s=$('#cto');if(!s||!room)return;const cur=s.value,h='<option value="">Semua</option>'+[...room.remoteParticipants.values()].map(p=>`<option value="${esc(p.identity)}">${esc(p.name||'Peserta')}</option>`).join('');if(s.dataset.h===h)return;s.dataset.h=h;s.innerHTML=h;s.value=[...s.options].some(x=>x.value===cur)?cur:''}
+const it=(a,v,t,on)=>`<div class="it" data-a="${a}" data-v="${esc(v||'')}">${on?'✓ ':'&nbsp;&nbsp;&nbsp;'}${esc(t)}</div>`;
+function pop(anchor,html,down){document.querySelectorAll('.pop').forEach(x=>x.remove());const a=$('#'+anchor);if(!a)return;const r=a.getBoundingClientRect(),d=document.createElement('div');d.className='pop';d.innerHTML=html;
+  d.onclick=e=>{const x=e.target.closest('[data-a]');if(!x)return;d.remove();act(x.dataset.a,x.dataset.v)};document.body.appendChild(d);
+  d.style.left=Math.max(6,Math.min(r.left,innerWidth-d.offsetWidth-6))+'px';if(down)d.style.top=(r.bottom+6)+'px';else d.style.bottom=(innerHeight-r.top+6)+'px'}
+document.addEventListener('click',e=>{if(!e.target.closest('.pop,.tb button,#bview'))document.querySelectorAll('.pop').forEach(x=>x.remove())});
+async function devs(kind,title){let ds=[];try{ds=await Room.getLocalDevices(kind)}catch(e){}let c='';try{c=room.getActiveDevice(kind)}catch(e){}
+  return `<div class="hd">${title}</div>`+(ds.map(d=>it('dev',kind+'|'+d.deviceId,d.label||'Perangkat',d.deviceId===c)).join('')||'<div class="it">Tidak tersedia</div>')}
+async function act(a,v){
+  if(a==='view')S.view=v;else if(a==='hs')S.hideSelf=!S.hideSelf;else if(a==='hn')S.hideNV=!S.hideNV;else if(a==='tm')S.timer=!S.timer;
+  else if(a==='fs'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})}
+  else if(a==='dev'){const [k,id]=v.split('|');try{await room.switchActiveDevice(k,id)}catch(e){toast('Gagal mengganti perangkat')}}
+  else if(a==='rec')rec();else if(a==='info')info();
+  else if(a==='mall'){send({t:'cmd',c:'mute'});toast('Permintaan mute dikirim ke semua peserta')}
+  else if(a==='sok'){S.shareOk=!S.shareOk;send({t:'cmd',c:'shareok',v:S.shareOk?1:0});toast(S.shareOk?'Peserta boleh berbagi layar':'Peserta tidak boleh berbagi layar')}
+  else if(a==='endall')leave('all');else if(a==='leave')leave();
+  update()}
+async function rec(){
+  if(S.rec){S.mr.stop();return}
+  try{const st=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true,preferCurrentTab:true}),ch=[],mr=new MediaRecorder(st);
+    mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
+    mr.onstop=()=>{S.rec=false;st.getTracks().forEach(t=>t.stop());const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(ch,{type:'video/webm'}));a.download='nexameet-rekaman.webm';a.click();update()};
+    st.getVideoTracks()[0].onended=()=>{if(mr.state!=='inactive')mr.stop()};
+    mr.start();S.mr=mr;S.rec=true;send({t:'chat',m:'⏺️ '+S.name+' mulai merekam meeting'});toast('Merekam. Pilih tab NexaMeet ini dan centang bagikan audio.');update()}
+  catch(e){toast('Recording dibatalkan atau tidak didukung browser ini')}}
+function info(){const m=document.createElement('div');m.className='modal';m.onclick=()=>m.remove();const h=[room.localParticipant,...room.remoteParticipants.values()].find(isHost);
+  m.innerHTML=`<div><b>Info meeting</b><br>Meeting ID: ${fmt(S.mid)}<br>Passcode: ${esc(S.pass)}<br>Host: ${esc(h?h.name:'-')}<br>Peserta: ${room.remoteParticipants.size+1}<br><small>Di damel ku Usep Zaenal Mutaqin Ver.06112026<br>Ketuk di mana saja untuk menutup</small></div>`;document.body.appendChild(m)}
+function setMini(on){const r=$('#room');if(!r)return;r.classList.toggle('mini',on);document.body.classList.toggle('minib',on);
+  if(on){S.mxPrev=S.mx;const ps=[...room.remoteParticipants.values()],sp=ps.find(p=>p.identity===S.spk)||ps[0]||room.localParticipant;S.mx='c:'+sp.identity}
+  else S.mx=S.mxPrev||'';update()}
+async function pip(){
+  try{
+    if($('#room').classList.contains('mini')){setMini(false);return}
+    if(document.pictureInPictureElement){await document.exitPictureInPicture();return}
+    if(!document.pictureInPictureEnabled||!HTMLVideoElement.prototype.requestPictureInPicture)return setMini(true);
+    const vs=[...document.querySelectorAll('#grid video')].filter(v=>v.readyState>1),v=document.querySelector('#grid .tile.big video')||vs.find(x=>!x.closest('.me'))||vs[0];
+    if(!v)return setMini(true);
+    await v.requestPictureInPicture();toast('Jendela mini aktif. Suara tetap berjalan.')
+  }catch(e){setMini(true)}}
+home();
+</script></body></html>
