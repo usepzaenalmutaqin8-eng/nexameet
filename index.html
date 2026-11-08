@@ -2,7 +2,7 @@
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NexaMeet</title>
-<meta name="author" content="Di damel ku Usep Zaenal Mutaqin Ver.06112026">
+<meta name="author" content="Di damel ku Usep Zaenal Mutaqin Ver.08112026">
 <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.8.1/dist/livekit-client.umd.min.js"></script>
 <style>
 :root{--pri:#2563EB;--bg:#F8FAFC;--card:#fff;--tx:#1E293B;--mut:#64748B;--dan:#DC2626;--bd:#E2E8F0}
@@ -15,46 +15,100 @@ button,input{font:inherit}
 input{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);margin:4px 0 12px}
 .wrap{max-width:900px;margin:0 auto;padding:20px}.logo{font-weight:800;font-size:22px;margin-bottom:20px}.logo span{color:var(--pri)}
 .hero{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
-@media(max-width:760px){.hero{grid-template-columns:1fr}}
+@media(max-width:760px){.hero{grid-template-columns:1fr}h1{font-size:28px!important}}
 h1{font-size:34px;line-height:1.15;margin:0 0 12px}.mut{color:var(--mut)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px}
-.av{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:26px;font-weight:700;color:#fff}
-#room{position:fixed;inset:0;background:#0B1220;color:#E2E8F0;display:flex;flex-direction:column}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 16px;font-size:14px;background:#0F172A}
+.av{width:clamp(34px,36%,110px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:clamp(13px,2.4vw,32px);font-weight:700;color:#fff}
+#room{position:fixed;inset:0;height:100vh;height:100dvh;background:#0B1220;color:#E2E8F0;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px 8px;padding:8px 14px;font-size:14px;background:#0F172A}
 .top a{color:#93C5FD}
+@media(max-width:600px){.top{font-size:12px;padding:6px 10px}}
 .mid{flex:1;display:flex;min-height:0;position:relative}
 #sidebox{display:contents}
-.grid{flex:1;display:grid;gap:8px;padding:8px;min-width:0;grid-auto-rows:1fr}
-.tile{background:#1E293B;border-radius:12px;position:relative;display:grid;place-items:center;overflow:hidden;min-height:0;border:3px solid transparent}
-.tile.spk{border-color:#16A34A}.tile video{width:100%;height:100%;object-fit:cover}.tile.me video{transform:scaleX(-1)}
-.tile.big{grid-column:1/-1;grid-row:span 2;order:-1}.tile.big video{object-fit:contain;background:#000}
-.nm{position:absolute;left:8px;bottom:8px;background:#000a;padding:3px 8px;border-radius:6px;font-size:12px}
+
+/* ---- Stage: strip (audience di atas) + main (speaker/pin) + galeri berhalaman ---- */
+.stage{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
+.stripw{display:flex;align-items:stretch;gap:4px;padding:6px 6px 0;flex:none}
+.stripw[hidden]{display:none}
+.strip{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;height:clamp(66px,15vh,118px);min-width:0;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+.strip::-webkit-scrollbar{display:none}
+.strip .tile{flex:0 0 auto;height:100%;aspect-ratio:16/9;scroll-snap-align:start;border-width:2px;border-radius:10px}
+.sa,.pg{background:#1E293B;border:0;color:#E2E8F0;cursor:pointer;border-radius:8px;flex:none}
+.sa:hover,.pg:hover{background:#334155}
+.sa{width:26px;font-size:13px}
+.sa:disabled,.pg:disabled{opacity:.3;cursor:default}
+.main{flex:1;display:grid;gap:6px;padding:6px 8px 8px;min-height:0;min-width:0}
+.gw{flex:1;display:flex;gap:4px;padding:6px 4px;min-height:0}
+.grid{flex:1;display:grid;gap:6px;min-width:0;min-height:0}
+.pg{width:34px;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.pg small{font-size:10px}.pg[hidden]{display:none}
+@media(max-width:520px){.pg{width:28px}}
+.stage.g .stripw,.stage.g .main{display:none}.stage:not(.g) .gw{display:none}
+
+.tile{background:#1E293B;border-radius:12px;position:relative;display:grid;place-items:center;overflow:hidden;min-height:0;min-width:0;border:3px solid transparent}
+.tile.spk{border-color:#16A34A}
+.tile video{width:100%;height:100%;object-fit:cover}
+.tile.scr video{object-fit:contain;background:#000}
+.tile.me video{transform:scaleX(-1)}
+/* video utama tidak dipotong: tampil utuh (contain); bila hanya 1 video, kotak dipas 16:9 di tengah area */
+.main .tile video{object-fit:contain;background:#000}
+.main{container-type:size}
+.main.one .tile:not(.scr){justify-self:center;align-self:center;width:min(100cqw,calc(100cqh*16/9));height:min(100cqh,calc(100cqw*9/16))}
+.nm{position:absolute;left:8px;bottom:8px;background:#000a;padding:3px 8px;border-radius:6px;font-size:12px;max-width:calc(100% - 16px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;z-index:1}
+.strip .nm{font-size:10px;left:4px;bottom:4px;padding:2px 5px}
+.tc{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;z-index:2;transition:opacity .15s}
+.tile:hover .tc{opacity:1}@media(hover:none){.tc{opacity:.85}}
+.tc button{background:#000a;border:0;color:#fff;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:14px}
+.tc button.on{background:var(--pri)}
+.strip .tc .mx{display:none}.strip .tc{top:3px;right:3px}.strip .tc button{padding:2px 6px;font-size:12px}
+.tile.scr .pn{display:none}
+
 .side{width:320px;background:#0F172A;border-left:1px solid #263248;display:flex;flex-direction:column}
 @media(max-width:700px){.side{position:absolute;inset:0;width:100%;z-index:5}}
 .side h3{margin:0;padding:12px 14px;border-bottom:1px solid #263248;font-size:15px;display:flex;justify-content:space-between}
 .side a{color:#93C5FD;margin-left:6px}
 .msgs{flex:1;overflow:auto;padding:12px;font-size:14px}.msgs p{margin:0 0 10px}.msgs b{color:#93C5FD}
-.side form,.pl{padding:10px}.side input{background:#1E293B;color:#fff;border-color:#334155;margin:0}
+.side form,.pl{padding:10px}.pl{overflow:auto}.side input{background:#1E293B;color:#fff;border-color:#334155;margin:0}
 .pr{display:flex;justify-content:space-between;align-items:center;padding:8px 4px;font-size:14px;border-bottom:1px solid #1E293B;gap:6px}
-.tb{display:flex;justify-content:center;gap:6px;padding:8px;background:#000;flex-wrap:wrap}
+.tb{display:flex;justify-content:center;gap:6px;padding:8px 8px max(8px,env(safe-area-inset-bottom));background:#000;flex-wrap:wrap}
 .tb button{background:none;border:0;color:#E2E8F0;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:58px}
 .tb button i{font-style:normal;font-size:20px}.tb button:hover,.tb .on{background:#1E293B}.tb .end{background:var(--dan)}
+@media(max-width:600px){.tb{gap:2px;padding-left:4px;padding-right:4px}.tb button{min-width:46px;padding:5px 5px;font-size:10px}.tb button i{font-size:18px}}
+@media(max-height:520px){.tb button span{display:none}.tb button{min-width:40px;padding:4px 6px}.tb{padding-top:4px;padding-bottom:4px}.top{padding:4px 10px}}
 .menu{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:#1E293B;border-radius:12px;padding:6px;z-index:9;display:flex}
 .menu button{background:none;border:0;color:#fff;padding:6px 10px;cursor:pointer;font-size:24px}
 .fl{position:fixed;bottom:90px;font-size:34px;animation:up 2.4s ease-out forwards;pointer-events:none;z-index:20}
 @keyframes up{to{transform:translateY(-260px);opacity:0}}
 .toast{position:fixed;top:56px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:8px 16px;border-radius:10px;font-size:14px;z-index:30;max-width:90%}
-.grid.sv{grid-template-rows:minmax(0,4fr) minmax(0,1fr);grid-auto-rows:minmax(0,1fr)}.grid.sv .tile.big{grid-row:1}
-.pop{position:fixed;background:#1E293B;border-radius:10px;padding:6px 0;z-index:40;min-width:240px;max-width:92vw;box-shadow:0 8px 30px #0008;font-size:14px;color:#E2E8F0}
+.pop{position:fixed;background:#1E293B;border-radius:10px;padding:6px 0;z-index:40;min-width:240px;max-width:92vw;max-height:80vh;overflow:auto;box-shadow:0 8px 30px #0008;font-size:14px;color:#E2E8F0}
 .pop .it{padding:8px 14px;cursor:pointer}.pop .it:hover{background:#334155}.pop .hd{padding:6px 14px;font-weight:700;font-size:12px;color:#94A3B8}.pop hr{border:0;border-top:1px solid #334155;margin:4px 0}
 .pop .red{color:#fff;background:var(--dan);margin:4px 8px;border-radius:8px;text-align:center}
 .car{min-width:20px!important;padding:6px 0!important;font-size:12px!important}
+@media(max-width:600px){.car{min-width:14px!important}}
 .modal{position:fixed;inset:0;background:#0009;z-index:50;display:grid;place-items:center;color:#E2E8F0}.modal>div{background:#1E293B;padding:20px;border-radius:14px;max-width:90vw;line-height:1.8}
-.tile .mx{position:absolute;top:6px;right:6px;background:#000a;border:0;color:#fff;border-radius:6px;padding:3px 8px;cursor:pointer;opacity:0;font-size:15px;z-index:2}
-.tile:hover .mx{opacity:1}@media(hover:none){.tile .mx{opacity:.85}}
-.grid.mxg{grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr)!important}.grid.mxg .tile:not(.mxd){display:none}.tile.mxd{grid-column:1/-1;grid-row:1}.tile.mxd video{object-fit:contain;background:#000}
+/* ---- Video & efek ---- */
+#room.nomirror .tile.me video,#room.nomirror .fxpv video{transform:none}
+#room.orig .tile.me video{object-fit:contain!important;background:#000}
+.fxbody{flex:1;display:flex;flex-direction:column;min-height:0;overflow:auto}
+.fxpv{aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;margin:10px;flex:none;display:grid;place-items:center;font-size:13px;color:#94A3B8}
+.fxpv video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.fxst{font-size:11px;color:#94A3B8;text-align:center;padding:0 10px 8px;flex:none}
+.fxtabs{display:flex;gap:2px;padding:0 10px;border-bottom:1px solid #263248;flex:none}
+.fxtabs button{flex:1;background:none;border:0;border-bottom:2px solid transparent;color:#94A3B8;padding:8px 4px;cursor:pointer;font-size:13px}
+.fxtabs button.on{color:#fff;border-color:var(--pri)}
+.fxc{padding:10px 14px;flex:1}
+.fxrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;font-size:14px}
+.fxc select{background:#1E293B;color:#fff;border:1px solid #334155;border-radius:8px;padding:6px;max-width:58%}
+.fxh{font-size:12px;color:#94A3B8;margin:4px 0 0}
+.sw{width:42px;height:24px;border-radius:12px;border:0;background:#475569;position:relative;cursor:pointer;flex:none;padding:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s}
+.sw.on{background:var(--pri)}.sw.on::after{left:21px}.sw:disabled{opacity:.4;cursor:not-allowed}
+.bgs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bgo{aspect-ratio:16/9;border-radius:8px;border:2px solid transparent;background:#1E293B;cursor:pointer;overflow:hidden;font-size:12px;display:grid;place-items:center;color:#E2E8F0;padding:0;position:relative}
+.bgo.on{border-color:var(--pri)}.bgo img{width:100%;height:100%;object-fit:cover;display:block}
+.bgo span{position:absolute;left:0;right:0;bottom:0;background:#000a;font-size:10px;padding:1px 0}
 #room.mini{inset:auto 12px 12px auto;width:300px;height:200px;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px #000a;z-index:60;cursor:pointer}
-#room.mini .top,#room.mini .tb,#room.mini #sidebox,#room.mini .mx{display:none}#room.mini .grid{padding:0}
+#room.mini .top,#room.mini .tb,#room.mini #sidebox,#room.mini .tc,#room.mini .stripw,#room.mini .pg{display:none}#room.mini .main{padding:0}
 body.minib::after{content:"Meeting berjalan di jendela mini. Klik jendela mini untuk kembali.";position:fixed;left:0;right:0;top:40%;text-align:center;color:var(--mut);padding:20px}
 </style></head><body><div id="app"></div>
 <script>
@@ -65,7 +119,8 @@ const COL=['#2563EB','#16A34A','#F59E0B','#DC2626','#7C3AED','#0891B2'];
 const colr=n=>COL[[...String(n)].reduce((a,c)=>a+c.charCodeAt(0),0)%COL.length];
 const ini=n=>String(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 const fmt=id=>id.replace(/^(\d{3})(\d{4})(\d+)$/,'$1 $2 $3');
-const S={name:'',mid:'',pass:'',host:false,chat:[],hands:{},panel:null,left:false,view:'gallery',hideSelf:false,hideNV:false,timer:true,shareOk:true,rec:false,spk:'',mr:null,mx:''};
+/* view: speaker | gallery | dynamic | multi ; pins = daftar identity yang di-pin (hanya untuk tampilan saya) */
+const S={name:'',mid:'',pass:'',host:false,chat:[],hands:{},panel:null,left:false,view:'speaker',hideSelf:false,hideNV:false,timer:true,shareOk:true,rec:false,spk:'',spkT:0,mr:null,mx:'',pins:[],page:0};
 let room,tick,t0=0,raf=0,sig='';const T=new Map();
 const DEFAULT_API='https://nexameet-token.usepzaenalmutaqin092.workers.dev';
 function getApi(){let a=DEFAULT_API;try{a=localStorage.getItem('nx_api')||a}catch(e){}
@@ -78,7 +133,7 @@ function home(){
   <div class="card"><label>Nama Anda</label><input id="n" value="${esc(S.name)}" placeholder="Contoh: Usep">
   <button class="btn" id="nm" style="width:100%">📹 New Meeting</button><hr style="border:0;border-top:1px solid var(--bd);margin:16px 0">
   <label>Meeting ID</label><input id="id" inputmode="numeric" placeholder="123 4567 8901"><label>Passcode</label><input id="pc" inputmode="numeric">
-  <button class="btn alt" id="jn" style="width:100%">Join Meeting</button></div></div><p class="mut" style="text-align:center;font-size:13px;margin-top:28px">Di damel ku Usep Zaenal Mutaqin Ver.06112026</p></div>`;
+  <button class="btn alt" id="jn" style="width:100%">Join Meeting</button></div></div><p class="mut" style="text-align:center;font-size:13px;margin-top:28px">Di damel ku Usep Zaenal Mutaqin Ver.08112026</p></div>`;
   const go=async action=>{const n=$('#n').value.trim();if(!n)return toast('Isi nama dulu');S.name=n;
     if(action==='join'){S.mid=$('#id').value.replace(/\D/g,'');S.pass=$('#pc').value.trim();if(S.mid.length<8)return toast('Meeting ID tidak valid')}
     const b=$(action==='create'?'#nm':'#jn'),old=b.textContent;b.disabled=true;b.textContent='Menghubungkan...';
@@ -89,7 +144,7 @@ async function enter(action){
   const api=getApi();if(!api)throw new Error('URL server token belum diisi');
   let d;try{const r=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,name:S.name,room:S.mid,pass:S.pass})});d=await r.json();if(!r.ok)throw new Error(d.error||'Ditolak server')}
   catch(e){throw new Error(e.message==='Failed to fetch'?'Tidak bisa menghubungi server token':e.message)}
-  S.mid=d.room;if(d.pass)S.pass=d.pass;S.host=action==='create';S.chat=[];S.hands={};S.panel=null;S.left=false;
+  S.mid=d.room;if(d.pass)S.pass=d.pass;S.host=action==='create';S.chat=[];S.hands={};S.panel=null;S.left=false;S.pins=[];S.page=0;S.mx='';S.spk='';fxReset();
   room=new Room({adaptiveStream:true,dynacast:true,videoCaptureDefaults:{resolution:VideoPresets.h360}});
   const E=RoomEvent;
   [E.ParticipantConnected,E.ParticipantDisconnected,E.TrackMuted,E.TrackUnmuted,E.TrackSubscribed,E.LocalTrackPublished,E.LocalTrackUnpublished,E.ActiveSpeakersChanged,E.ParticipantMetadataChanged,E.ParticipantNameChanged].forEach(e=>room.on(e,update));
@@ -98,8 +153,9 @@ async function enter(action){
   room.on(E.TrackSubscribed,(t,pub,p)=>{if(t.kind==='audio'){const a=t.attach();a.dataset.a=p.identity;document.body.appendChild(a)}});
   room.on(E.TrackUnsubscribed,t=>{if(t.kind==='audio')t.detach().forEach(x=>x.remove());update()});
   room.on(E.Disconnected,()=>{if(!S.left)leave('Koneksi terputus',1)});
-  room.on(E.ActiveSpeakersChanged,sp=>{if(sp.length&&sp[0].identity!==S.spk){S.spk=sp[0].identity;update()}});
+  room.on(E.ActiveSpeakersChanged,sp=>{const s=sp.find(x=>!x.isLocal);if(s&&s.identity!==S.spk&&Date.now()-S.spkT>1500){S.spk=s.identity;S.spkT=Date.now();update()}});
   room.on(E.DataReceived,onData);
+  room.on(E.LocalTrackPublished,pub=>{if(pub.source===Track.Source.Camera){FX.cur=null;applyFx();if(S.panel==='fx')setTimeout(attachPreview,300)}});
   await room.connect(d.url,d.token);
   const lp=room.localParticipant;
   try{await lp.setMicrophoneEnabled(true)}catch(e){toast('Mikrofon tidak tersedia/diblokir')}
@@ -120,12 +176,20 @@ function onData(buf,p){let d;try{d=JSON.parse(new TextDecoder().decode(buf))}cat
     else if(d.c==='shareok'){S.shareOk=!!d.v;if(!d.v&&room.localParticipant.isScreenShareEnabled)room.localParticipant.setScreenShareEnabled(false);toast(d.v?'Host mengizinkan berbagi layar':'Berbagi layar dinonaktifkan oleh host')}
     else if(d.c==='mute'&&(!d.to||d.to===me)&&!S.host){room.localParticipant.setMicrophoneEnabled(false);toast('Host mematikan mikrofon Anda')}}}
 
-/* ---- Tampilan: dibangun sekali, lalu hanya diperbarui sebagian (tanpa mengganti elemen video) ---- */
+/* ---- Tampilan: dibangun sekali, lalu hanya diperbarui sebagian (elemen video dipindah, tidak dibuat ulang) ---- */
+function viewHtml(){
+  return `<div class="hd">Tampilan</div>`+it('view','speaker','Speaker',S.view==='speaker')+it('view','gallery','Gallery',S.view==='gallery')+it('view','dynamic','Dynamic gallery',S.view==='dynamic')+it('view','multi','Multi-speaker',S.view==='multi')+'<hr>'
+   +(S.pins.length?it('unpinall','','Lepas semua pin ('+S.pins.length+')'):'')
+   +it('hs','','Sembunyikan tampilan saya',S.hideSelf)+it('hn','','Sembunyikan peserta tanpa video',S.hideNV)+'<hr>'+it('tm','','Tampilkan timer meeting',S.timer)+it('fs','','Layar penuh')}
 function buildRoom(){
   const b=(id,l)=>`<button id="${id}"><i></i><span>${l}</span></button>`,car=id=>`<button class="car" id="${id}">▴</button>`;
   app.innerHTML=`<div id="room"><div class="top"><span>🛡️ ID ${fmt(S.mid)} · Pass ${esc(S.pass)} <a href="#" id="cp">Salin undangan</a></span><span><b id="recb" hidden style="color:#F87171">● REC </b><a href="#" id="bpip">— Minimize</a> · <a href="#" id="bview">⊞ Tampilan</a> · <span id="clk">00:00</span></span></div>
-  <div class="mid"><div class="grid" id="grid"></div><div id="sidebox"></div></div>
-  <div class="tb">${b('bm','Audio')}${car('cm')}${b('bv','Video')}${car('cv')}${b('bp','Peserta')}${b('bc','Chat')}${b('br','React')}${b('bh','Angkat')}${b('bs','Share')}${S.host?b('bk','Host tools'):''}${b('bmo','More')}<button id="be" class="end"><i>⏻</i><span>${S.host?'End':'Leave'}</span></button></div><div id="menubox"></div></div>`;
+  <div class="mid"><div class="stage" id="stage">
+    <div class="stripw" id="stripw" hidden><button class="sa" id="sl" title="Geser kiri">◀</button><div class="strip" id="strip"></div><button class="sa" id="sr" title="Geser kanan">▶</button></div>
+    <div class="main" id="main"></div>
+    <div class="gw" id="gw"><button class="pg" id="pl" title="Halaman sebelumnya"></button><div class="grid" id="grid"></div><button class="pg" id="pr" title="Halaman berikutnya"></button></div>
+  </div><div id="sidebox"></div></div>
+  <div class="tb">${b('bm','Audio')}${car('cm')}${b('bv','Video')}${car('cv')}${b('bp','Peserta')}${b('bc','Chat')}${b('br','React')}${b('bh','Angkat')}${b('bs','Share')}${b('bvw','Tampilan')}${S.host?b('bk','Host tools'):''}${b('bmo','More')}<button id="be" class="end"><i>⏻</i><span>${S.host?'End':'Leave'}</span></button></div><div id="menubox"></div></div>`;
   T.clear();S.panel=null;sig='';
   const lp=()=>room.localParticipant,f=(id,fn)=>{const e=$('#'+id);if(e)e.onclick=ev=>{ev.preventDefault();fn()}};
   const tog=async fn=>{try{await fn()}catch(e){toast('Tidak bisa mengakses perangkat')}update()};
@@ -135,23 +199,44 @@ function buildRoom(){
   f('bp',()=>openPanel('part'));f('bc',()=>openPanel('chat'));
   f('br',()=>{const m=$('#menubox');m.innerHTML=m.innerHTML?'':`<div class="menu">${['👍','👏','❤️','😂','🎉'].map(e=>`<button data-e="${e}">${e}</button>`).join('')}</div>`});
   f('bh',()=>{const id=lp().identity,v=!S.hands[id];S.hands[id]=v;send({t:'hand',v:v?1:0});update()});
-  f('bview',()=>pop('bview',`<div class="hd">Tampilan</div>`+it('view','speaker','Speaker',S.view==='speaker')+it('view','gallery','Gallery',S.view==='gallery')+'<hr>'+it('hs','','Sembunyikan tampilan saya',S.hideSelf)+it('hn','','Sembunyikan peserta tanpa video',S.hideNV)+'<hr>'+it('tm','','Tampilkan timer meeting',S.timer)+it('fs','','Layar penuh'),true));
+  f('bview',()=>pop('bview',viewHtml(),true));
+  f('bvw',()=>pop('bvw',viewHtml()));
   f('cm',async()=>pop('cm',await devs('audioinput','Pilih mikrofon')+'<hr>'+await devs('audiooutput','Pilih speaker')));
-  f('cv',async()=>pop('cv',await devs('videoinput','Pilih kamera')));
+  f('cv',async()=>pop('cv',await devs('videoinput','Pilih kamera')+'<hr>'+it('blur','','Blur latar belakang',FX.bg==='blur')+it('fxbg','','Latar belakang virtual…',FX.bg==='img')+'<hr>'+it('touch','','Perbaiki penampilan',FX.touch)+it('low','','Sesuaikan cahaya redup',FX.low)+'<hr>'+it('hd','','HD (720p)',FX.hd)+it('orig','','Rasio asli',FX.orig)+it('mirror','','Cermin video saya',FX.mirror)+'<hr>'+it('fxpanel','','Pengaturan video & efek…')));
   f('bpip',()=>pip());
+  f('sl',()=>{const s=$('#strip');s.scrollBy({left:-s.clientWidth*.8,behavior:'smooth'})});
+  f('sr',()=>{const s=$('#strip');s.scrollBy({left:s.clientWidth*.8,behavior:'smooth'})});
+  f('pl',()=>goPage(-1));f('pr',()=>goPage(1));
+  const st=$('#strip');st.addEventListener('scroll',stripArrows,{passive:true});
+  st.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){st.scrollLeft+=e.deltaY;e.preventDefault()}},{passive:false});
+  let tx=0;const gw=$('#gw');gw.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  gw.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)goPage(dx<0?1:-1)},{passive:true});
   $('#room').addEventListener('click',e=>{if($('#room').classList.contains('mini')&&!e.target.closest('.top,.tb'))setMini(false)});
   f('bk',()=>pop('bk',`<div class="hd">Host tools</div>`+it('mall','','Mute semua peserta')+it('sok','','Izinkan peserta berbagi layar',S.shareOk)));
-  f('bmo',()=>pop('bmo',it('rec','',S.rec?'Stop recording':'Record (rekam tab ini)')+it('info','','Info meeting')+it('fs','','Layar penuh')));
+  f('bmo',()=>pop('bmo',it('fxpanel','','Video & efek')+it('rec','',S.rec?'Stop recording':'Record (rekam tab ini)')+it('info','','Info meeting')+it('fs','','Layar penuh')));
   f('be',()=>pop('be',(S.host?`<div class="it red" data-a="endall">Akhiri meeting untuk semua</div>`:'')+`<div class="it${S.host?'':' red'}" data-a="leave">Tinggalkan meeting</div><div class="it" data-a="x">Batal</div>`));
   f('cp',()=>{try{navigator.clipboard.writeText(`Bergabung ke NexaMeet\nMeeting ID: ${fmt(S.mid)}\nPasscode: ${S.pass}\nBuka: ${location.href.split('#')[0]}`)}catch(e){}toast('Undangan disalin')});
   $('#menubox').onclick=e=>{const x=e.target.closest('[data-e]');if(!x)return;send({t:'rx',e:x.dataset.e});fly(x.dataset.e);$('#menubox').innerHTML=''};
   $('#sidebox').onclick=e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();
-    if(a.dataset.x)openPanel(null);else if(a.dataset.m)send({t:'cmd',c:'mute',to:a.dataset.m});else if(a.dataset.k)send({t:'cmd',c:'kick',to:a.dataset.k})};
+    if(a.dataset.x)openPanel(null);else if(a.dataset.m)send({t:'cmd',c:'mute',to:a.dataset.m});else if(a.dataset.k)send({t:'cmd',c:'kick',to:a.dataset.k});else if(a.dataset.p)togglePin(a.dataset.p)};
   update();
 }
 function update(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(!room||S.left||!$('#grid'))return;syncTiles();syncBar();syncSide()})}
-function tileFor(k,cls){let t=T.get(k);if(!t){const el=document.createElement('div');el.className='tile '+cls;el.innerHTML='<span class="nm"></span><button class="mx" title="Maximize / Restore">⛶</button>';el.ondblclick=()=>{S.mx=S.mx===k?'':k;update()};el.querySelector('.mx').onclick=ev=>{ev.stopPropagation();S.mx=S.mx===k?'':k;update()};$('#grid').appendChild(el);t={el,nm:el.firstChild,media:null,tr:null,sid:'',an:''};T.set(k,t)}return t}
-function dropMedia(t){if(t.media){try{t.tr&&t.tr.detach(t.media)}catch(e){}t.media.remove()}t.media=null;t.tr=null;t.sid='';t.an=''}
+function goPage(d){S.page=Math.max(0,S.page+d);update()}
+function togglePin(id){
+  const i=S.pins.indexOf(id);
+  if(i>=0){S.pins.splice(i,1);toast('Pin dilepas')}
+  else{if(S.pins.length>=4)S.pins.shift();S.pins.push(id);
+    if(S.view==='gallery'||S.view==='dynamic'){S.view='speaker';toast('Peserta di-pin — beralih ke tampilan Speaker')}else toast('Peserta di-pin')}
+  S.mx='';update()}
+function tileFor(k,cls,pid){let t=T.get(k);if(!t){const el=document.createElement('div');el.className='tile '+cls;
+  el.innerHTML='<span class="nm"></span><div class="tc"><button class="pn" title="Pin / Lepas pin">📌</button><button class="mx" title="Maximize / Restore">⛶</button></div>';
+  const t0={el,nm:el.querySelector('.nm'),pnb:el.querySelector('.pn'),mxb:el.querySelector('.mx'),media:null,tr:null,an:'',pid};
+  el.ondblclick=()=>{S.mx=S.mx===k?'':k;update()};
+  t0.mxb.onclick=ev=>{ev.stopPropagation();S.mx=S.mx===k?'':k;update()};
+  t0.pnb.onclick=ev=>{ev.stopPropagation();togglePin(pid)};
+  T.set(k,t0);t=t0}return t}
+function dropMedia(t){if(t.media){try{t.tr&&t.tr.detach(t.media)}catch(e){}t.media.remove()}t.media=null;t.tr=null;t.an=''}
 function setMedia(t,pub,name){
   const tr=pub&&pub.track&&!pub.isMuted?pub.track:null;
   if(tr){
@@ -161,54 +246,113 @@ function setMedia(t,pub,name){
     if(t.an!==name){t.an=name;t.media.textContent=ini(name);t.media.style.background=colr(name)}
   }
 }
+/* menempatkan tile ke container sesuai urutan; elemen yang pindah diputar ulang agar video tidak berhenti */
+function place(par,keys){
+  keys.forEach((k,i)=>{const el=T.get(k).el;
+    if(par.children[i]!==el){const moved=el.parentNode!==par;par.insertBefore(el,par.children[i]||null);
+      if(moved){const v=el.querySelector('video');if(v)v.play().catch(()=>{})}}});
+  while(par.children.length>keys.length)par.lastElementChild.remove()}
+function dims(){const w=innerWidth,h=innerHeight;let c=w<520?2:w<900?3:5,r=h<520?2:(w<520?3:(h<760?3:4));if(w>=1200&&h>=800){c=5;r=5}return[c,r]}
+function pickGrid(n,W,H,mc,mr){if(n<=0)return[1,1];let best=[mc,mr],bs=1e9;
+  for(let c=1;c<=Math.min(mc,n);c++){const r=Math.ceil(n/c);if(r>mr)continue;const a=(W/c)/(H/r),s=Math.abs(Math.log(a/1.6));if(s<bs){bs=s;best=[c,r]}}return best}
+function stripArrows(){const w=$('#stripw'),s=$('#strip');if(!s||!w||w.hidden)return;const l=$('#sl'),r=$('#sr'),can=s.scrollWidth>s.clientWidth+2;
+  l.style.visibility=r.style.visibility=can?'visible':'hidden';l.disabled=s.scrollLeft<=1;r.disabled=s.scrollLeft+s.clientWidth>=s.scrollWidth-1}
 function syncTiles(){
   const lp=room.localParticipant,ps=[lp,...room.remoteParticipants.values()],keep=new Set();
-  const anyScr=ps.some(p=>p.isScreenShareEnabled),spkId=ps.some(p=>p.identity===S.spk)?S.spk:(ps[1]||lp).identity;
-  ps.forEach(p=>{const me=p===lp,nm=p.name||'Peserta';
-    if(p.isScreenShareEnabled){const k='s:'+p.identity,t=tileFor(k,'big');keep.add(k);setMedia(t,p.getTrackPublication(Track.Source.ScreenShare),null);t.nm.textContent='Layar '+nm}
+  const host=ps.find(isHost)||null,remotes=ps.filter(p=>p!==lp);
+  const spkId=remotes.some(p=>p.identity===S.spk)?S.spk:null;
+  const cams=[],scr=[];
+  const ord=p=>isHost(p)?0:p===lp?1:2;
+  [...ps].sort((a,b)=>ord(a)-ord(b)).forEach(p=>{const me=p===lp,nm=p.name||'Peserta',id=p.identity;
+    if(p.isScreenShareEnabled){const k='s:'+id,t=tileFor(k,'scr',id);keep.add(k);setMedia(t,p.getTrackPublication(Track.Source.ScreenShare),null);t.nm.textContent='Layar '+nm;t.el.classList.remove('spk');scr.push(k)}
     if((me&&S.hideSelf)||(S.hideNV&&!p.isCameraEnabled&&!p.isScreenShareEnabled))return;
-    const k='c:'+p.identity,t=tileFor(k,me?'me':'');keep.add(k);
+    const k='c:'+id,t=tileFor(k,me?'me':'',id),pinned=S.pins.includes(id);keep.add(k);cams.push(k);
     setMedia(t,p.isCameraEnabled?p.getTrackPublication(Track.Source.Camera):null,nm);
-    t.el.classList.toggle('spk',!!p.isSpeaking);t.el.classList.toggle('big',S.view==='speaker'&&!anyScr&&p.identity===spkId);
-    t.nm.textContent=(p.isMicrophoneEnabled?'':'🔇 ')+(S.hands[p.identity]?'✋ ':'')+nm+(me?' (Anda)':'')+(isHost(p)?' · Host':'')});
+    t.el.classList.toggle('spk',!!p.isSpeaking);t.pnb.classList.toggle('on',pinned);
+    t.nm.textContent=(pinned?'📌 ':'')+(p.isMicrophoneEnabled?'':'🔇 ')+(S.hands[id]?'✋ ':'')+nm+(me?' (Anda)':'')+(isHost(p)?' · Host':'')});
   for(const [k,t] of T)if(!keep.has(k)){dropMedia(t);t.el.remove();T.delete(k)}
-  const g=$('#grid'),n=T.size,bigN=[...T.values()].filter(t=>t.el.classList.contains('big')).length;
-  g.classList.toggle('sv',bigN>0);
+  S.pins=S.pins.filter(id=>cams.includes('c:'+id));
   if(S.mx&&!T.has(S.mx))S.mx='';
-  for(const [k,t] of T){t.el.classList.toggle('mxd',k===S.mx);const mb=t.el.querySelector('.mx');if(mb)mb.textContent=k===S.mx?'🗗':'⛶'}
-  g.classList.toggle('mxg',!!S.mx);g.style.gridTemplateColumns=`repeat(${bigN?Math.max(1,Math.min(6,n-bigN)):n<=1?1:n<=4?2:3},1fr)`;
-  
+  for(const [k,t] of T)t.mxb.textContent=k===S.mx?'🗗':'⛶';
+
+  let main=[],strip=[],gal=false;
+  if(S.mx){main=[S.mx]}
+  else if(scr.length){main=[scr[0]];strip=cams}
+  else if(S.view==='gallery'||S.view==='dynamic'){gal=true}
+  else{
+    let m=S.pins.map(id=>'c:'+id).slice(0,4);
+    if(!m.length){
+      const pick=(host&&host!==lp?host.identity:null);
+      if(S.view==='multi'){
+        const a=[];if(host)a.push(host.identity);if(spkId&&!a.includes(spkId))a.push(spkId);
+        if(a.length<2){const o=remotes.find(p=>!a.includes(p.identity));if(o)a.push(o.identity)}
+        if(a.length<2&&!a.includes(lp.identity))a.push(lp.identity);
+        m=a.map(id=>'c:'+id).filter(k=>cams.includes(k)).slice(0,2);
+      }else{
+        const id=spkId||pick||(remotes[0]||lp).identity;m=['c:'+id].filter(k=>cams.includes(k));
+      }
+      if(!m.length&&cams.length)m=[cams[0]];
+    }
+    main=m;strip=cams.filter(k=>!main.includes(k));
+  }
+  const stage=$('#stage'),mainEl=$('#main'),stripEl=$('#strip'),grid=$('#grid'),sw=$('#stripw');
+  stage.classList.toggle('g',gal);
+
+  /* main */
+  place(mainEl,gal?[]:main);
+  mainEl.classList.toggle('one',!gal&&main.length===1);
+  if(!gal){const n=main.length,w=mainEl.clientWidth||innerWidth;let c=1,r=1;
+    if(n===2){if(w<640)r=2;else c=2}else if(n===3){if(w<640)r=3;else c=3}else if(n>=4){c=2;r=2}
+    mainEl.style.gridTemplateColumns=`repeat(${c},minmax(0,1fr))`;mainEl.style.gridTemplateRows=`repeat(${r},minmax(0,1fr))`}
+  /* strip (audience di atas, bisa digulir kiri/kanan) */
+  place(stripEl,gal?[]:strip);sw.hidden=gal||!strip.length;
+  /* galeri berhalaman */
+  const pl=$('#pl'),pr=$('#pr');
+  if(gal){
+    const [mc,mr]=dims(),pp=mc*mr;let list=cams.slice();
+    if(S.view==='dynamic'&&spkId){const k='c:'+spkId,i=list.indexOf(k);if(i>=pp){list.splice(i,1);list.splice(pp-1,0,k)}}
+    const pages=Math.max(1,Math.ceil(list.length/pp));S.page=Math.min(Math.max(0,S.page),pages-1);
+    const vis=list.slice(S.page*pp,S.page*pp+pp),gw=$('#gw');
+    const [c,r]=pickGrid(vis.length,gw.clientWidth-(pages>1?80:0),gw.clientHeight,mc,mr);
+    grid.style.gridTemplateColumns=`repeat(${c},minmax(0,1fr))`;grid.style.gridTemplateRows=`repeat(${r},minmax(0,1fr))`;
+    place(grid,vis);
+    pl.hidden=pr.hidden=pages<2;pl.disabled=S.page===0;pr.disabled=S.page>=pages-1;
+    pl.innerHTML='◀<small>'+(S.page+1)+'/'+pages+'</small>';pr.innerHTML='▶<small>'+(S.page+1)+'/'+pages+'</small>';
+  }else{place(grid,[]);pl.hidden=pr.hidden=true}
+  stripArrows();
 }
 function syncBar(){
   const lp=room.localParticipant,n=room.remoteParticipants.size+1,hand=!!S.hands[lp.identity];
   const set=(id,ic,l,on)=>{const b=$('#'+id);if(!b)return;b.firstChild.textContent=ic;if(l)b.lastChild.textContent=l;b.classList.toggle('on',!!on)};
   set('bm',lp.isMicrophoneEnabled?'🎤':'🔇');set('bv',lp.isCameraEnabled?'📹':'🚫');set('bp','👥','Peserta '+n,S.panel==='part');
   set('bc','💬',null,S.panel==='chat');set('br','😀');set('bh','✋',hand?'Turunkan':'Angkat',hand);
-  set('bs','🖥️',lp.isScreenShareEnabled?'Stop Share':'Share',lp.isScreenShareEnabled);set('bk','🛡️');set('bmo','⋯');const rb=$('#recb');if(rb)rb.hidden=!S.rec;const ck=$('#clk');if(ck)ck.style.display=S.timer?'':'none';
+  set('bs','🖥️',lp.isScreenShareEnabled?'Stop Share':'Share',lp.isScreenShareEnabled);set('bvw','⊞');set('bk','🛡️');set('bmo','⋯');const rb=$('#recb');if(rb)rb.hidden=!S.rec;const ck=$('#clk');if(ck)ck.style.display=S.timer?'':'none';
+  const rm=$('#room');if(rm){rm.classList.toggle('nomirror',!FX.mirror);rm.classList.toggle('orig',FX.orig)}
 }
 function openPanel(n){
-  S.panel=(n&&S.panel!==n)?n:null;sig='';const sb=$('#sidebox');sb.innerHTML='';
+  S.panel=(n&&S.panel!==n)?n:null;sig='';const sb=$('#sidebox');detachPreview();sb.innerHTML='';
+  if(S.panel==='fx')buildFx(sb);
   if(S.panel==='chat'){
     sb.innerHTML=`<aside class="side"><h3>Chat <a href="#" data-x="1">✕</a></h3><div class="msgs">${S.chat.map(m=>`<p><b>${esc(m.n)}:</b> ${esc(m.m)}</p>`).join('')}</div><form id="cf"><select id="cto" style="width:100%;margin-bottom:6px;padding:6px;border-radius:8px;background:#1E293B;color:#fff;border:1px solid #334155"></select><input id="ci" placeholder="Ketik pesan..." autocomplete="off"></form></aside>`;
     const i=$('#ci'),m=$('.msgs');m.scrollTop=m.scrollHeight;i.focus();fillTo();
     $('#cf').onsubmit=e=>{e.preventDefault();const t=i.value.trim();if(!t)return;const to=$('#cto').value,tn=$('#cto').selectedOptions[0].text,lbl='Anda'+(to?' → '+tn+' (pribadi)':'');S.chat.push({n:lbl,m:t});send({t:'chat',m:t,dm:to?1:0},to);addMsg(lbl,t);i.value=''};
   }
   if(S.panel==='part')sb.innerHTML=`<aside class="side"><h3><span id="pt"></span> <a href="#" data-x="1">✕</a></h3><div class="pl" id="plist"></div></aside>`;
-  syncBar();syncSide();
+  syncBar();syncSide();update();
 }
 function syncSide(){
   if(S.panel==='chat')fillTo();if(S.panel!=='part'||!room)return;
   const lp=room.localParticipant,ps=[lp,...room.remoteParticipants.values()];
-  const s=ps.map(p=>[p.identity,p.name,p.isMicrophoneEnabled,S.hands[p.identity],isHost(p)].join('|')).join(';');
+  const s=ps.map(p=>[p.identity,p.name,p.isMicrophoneEnabled,S.hands[p.identity],isHost(p),S.pins.includes(p.identity)].join('|')).join(';');
   if(s===sig)return;sig=s;$('#pt').textContent='Peserta ('+ps.length+')';
-  $('#plist').innerHTML=ps.map(p=>`<div class="pr"><span>${S.hands[p.identity]?'✋ ':''}${esc(p.name||'Peserta')}${p===lp?' (Anda)':''}${isHost(p)?' · Host':''}</span><span>${p.isMicrophoneEnabled?'🎤':'🔇'}${S.host&&p!==lp?` <a href="#" data-m="${esc(p.identity)}">mute</a><a href="#" data-k="${esc(p.identity)}">keluarkan</a>`:''}</span></div>`).join('');
+  $('#plist').innerHTML=ps.map(p=>`<div class="pr"><span>${S.pins.includes(p.identity)?'📌 ':''}${S.hands[p.identity]?'✋ ':''}${esc(p.name||'Peserta')}${p===lp?' (Anda)':''}${isHost(p)?' · Host':''}</span><span>${p.isMicrophoneEnabled?'🎤':'🔇'} <a href="#" data-p="${esc(p.identity)}">${S.pins.includes(p.identity)?'lepas pin':'pin'}</a>${S.host&&p!==lp?` <a href="#" data-m="${esc(p.identity)}">mute</a><a href="#" data-k="${esc(p.identity)}">keluarkan</a>`:''}</span></div>`).join('');
 }
 function addMsg(n,t){const m=$('.msgs');if(!m)return;const p=document.createElement('p');p.innerHTML=`<b>${esc(n)}:</b> ${esc(t)}`;m.appendChild(p);m.scrollTop=m.scrollHeight}
 function fly(e){const d=document.createElement('div');d.className='fl';d.textContent=e;d.style.left=(30+Math.random()*40)+'%';document.body.appendChild(d);setTimeout(()=>d.remove(),2500)}
 async function leave(msg){
   if(msg==='all'){msg=null;await send({t:'cmd',c:'end'});await new Promise(r=>setTimeout(r,400))}
   S.left=true;clearInterval(tick);const dur=Math.max(1,Math.round((Date.now()-t0)/60000));
-  try{room.disconnect()}catch(e){}document.querySelectorAll('audio[data-a]').forEach(a=>a.remove());T.clear();
+  fxReset();try{room.disconnect()}catch(e){}document.querySelectorAll('audio[data-a]').forEach(a=>a.remove());T.clear();document.body.classList.remove('minib');
   app.innerHTML=`<div class="wrap" style="max-width:520px;text-align:center"><div class="card"><h2>${esc(msg||'Meeting selesai')}</h2><p class="mut">Durasi ${dur} menit.</p><button class="btn" id="hh">Kembali ke Beranda</button></div></div>`;
   $('#hh').onclick=home;
 }
@@ -221,7 +365,9 @@ document.addEventListener('click',e=>{if(!e.target.closest('.pop,.tb button,#bvi
 async function devs(kind,title){let ds=[];try{ds=await Room.getLocalDevices(kind)}catch(e){}let c='';try{c=room.getActiveDevice(kind)}catch(e){}
   return `<div class="hd">${title}</div>`+(ds.map(d=>it('dev',kind+'|'+d.deviceId,d.label||'Perangkat',d.deviceId===c)).join('')||'<div class="it">Tidak tersedia</div>')}
 async function act(a,v){
-  if(a==='view')S.view=v;else if(a==='hs')S.hideSelf=!S.hideSelf;else if(a==='hn')S.hideNV=!S.hideNV;else if(a==='tm')S.timer=!S.timer;
+  if(await fxAct(a,v)){update();if(S.panel==='fx')renderFx();return}
+  if(a==='view'){S.view=v;S.page=0;S.mx=''}else if(a==='unpinall'){S.pins=[]}
+  else if(a==='hs')S.hideSelf=!S.hideSelf;else if(a==='hn')S.hideNV=!S.hideNV;else if(a==='tm')S.timer=!S.timer;
   else if(a==='fs'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})}
   else if(a==='dev'){const [k,id]=v.split('|');try{await room.switchActiveDevice(k,id)}catch(e){toast('Gagal mengganti perangkat')}}
   else if(a==='rec')rec();else if(a==='info')info();
@@ -238,7 +384,7 @@ async function rec(){
     mr.start();S.mr=mr;S.rec=true;send({t:'chat',m:'⏺️ '+S.name+' mulai merekam meeting'});toast('Merekam. Pilih tab NexaMeet ini dan centang bagikan audio.');update()}
   catch(e){toast('Recording dibatalkan atau tidak didukung browser ini')}}
 function info(){const m=document.createElement('div');m.className='modal';m.onclick=()=>m.remove();const h=[room.localParticipant,...room.remoteParticipants.values()].find(isHost);
-  m.innerHTML=`<div><b>Info meeting</b><br>Meeting ID: ${fmt(S.mid)}<br>Passcode: ${esc(S.pass)}<br>Host: ${esc(h?h.name:'-')}<br>Peserta: ${room.remoteParticipants.size+1}<br><small>Di damel ku Usep Zaenal Mutaqin Ver.06112026<br>Ketuk di mana saja untuk menutup</small></div>`;document.body.appendChild(m)}
+  m.innerHTML=`<div><b>Info meeting</b><br>Meeting ID: ${fmt(S.mid)}<br>Passcode: ${esc(S.pass)}<br>Host: ${esc(h?h.name:'-')}<br>Peserta: ${room.remoteParticipants.size+1}<br><small>Di damel ku Usep Zaenal Mutaqin Ver.08112026<br>Ketuk di mana saja untuk menutup</small></div>`;document.body.appendChild(m)}
 function setMini(on){const r=$('#room');if(!r)return;r.classList.toggle('mini',on);document.body.classList.toggle('minib',on);
   if(on){S.mxPrev=S.mx;const ps=[...room.remoteParticipants.values()],sp=ps.find(p=>p.identity===S.spk)||ps[0]||room.localParticipant;S.mx='c:'+sp.identity}
   else S.mx=S.mxPrev||'';update()}
@@ -247,9 +393,150 @@ async function pip(){
     if($('#room').classList.contains('mini')){setMini(false);return}
     if(document.pictureInPictureElement){await document.exitPictureInPicture();return}
     if(!document.pictureInPictureEnabled||!HTMLVideoElement.prototype.requestPictureInPicture)return setMini(true);
-    const vs=[...document.querySelectorAll('#grid video')].filter(v=>v.readyState>1),v=document.querySelector('#grid .tile.big video')||vs.find(x=>!x.closest('.me'))||vs[0];
+    const vs=[...document.querySelectorAll('#main video')].filter(v=>v.readyState>1),v=vs.find(x=>!x.closest('.me'))||vs[0];
     if(!v)return setMini(true);
     await v.requestPictureInPicture();toast('Jendela mini aktif. Suara tetap berjalan.')
   }catch(e){setMini(true)}}
+/* ---- Efek video: blur / latar belakang virtual, HD, cermin, rasio asli, perbaiki penampilan, cahaya redup ---- */
+const FX={bg:'none',blur:10,img:'',touch:false,low:false,hd:false,mirror:true,orig:false,tab:'video',cur:null,proc:null,trk:null,lib:null,q:Promise.resolve(),presets:null,imgs:[],pv:null,pvT:null};
+const FXOK=typeof CanvasRenderingContext2D!=='undefined'&&'filter' in CanvasRenderingContext2D.prototype;
+const LIBS=['https://esm.sh/@livekit/track-processors@0.8.2?deps=livekit-client@2.8.1','https://cdn.jsdelivr.net/npm/@livekit/track-processors@0.8.2/+esm'];
+function fxReset(){detachPreview();FX.cur=null;FX.proc=null;FX.trk=null}
+const camTrack=()=>{const p=room&&room.localParticipant.getTrackPublication(Track.Source.Camera);return(p&&p.track)||null};
+async function loadLib(){
+  if(FX.lib)return FX.lib;toast('Memuat efek background… (pertama kali agak lama)');let err;
+  for(const u of LIBS){try{FX.lib=await import(u);return FX.lib}catch(e){err=e}}
+  throw err||new Error('gagal memuat')}
+/* Prosesor sederhana (canvas) untuk "perbaiki penampilan" dan "cahaya redup"; dikirim ke peserta lain juga */
+class FxProcessor{
+  constructor(){this.name='nx-fx';this.f=''}
+  set(o){const a=[];if(o.touch)a.push('blur(0.9px) brightness(1.04) contrast(0.96) saturate(1.06)');if(o.low)a.push('brightness(1.4) contrast(1.1) saturate(1.05)');this.f=a.join(' ')}
+  async init(opts){
+    this.dead=false;const v=this.v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=new MediaStream([opts.track]);
+    await new Promise(r=>{v.onloadedmetadata=r;setTimeout(r,2000)});await v.play().catch(()=>{});
+    const c=this.c=document.createElement('canvas'),s=opts.track.getSettings?opts.track.getSettings():{};
+    c.width=v.videoWidth||s.width||640;c.height=v.videoHeight||s.height||360;const x=c.getContext('2d');
+    /* timer di Worker agar video tetap jalan saat tab tidak aktif */
+    this.wk=new Worker(URL.createObjectURL(new Blob(['let i;onmessage=e=>{clearInterval(i);if(e.data)i=setInterval(()=>postMessage(0),e.data)}'],{type:'text/javascript'})));
+    this.wk.onmessage=()=>{if(this.dead||v.readyState<2)return;if(v.videoWidth&&c.width!==v.videoWidth){c.width=v.videoWidth;c.height=v.videoHeight}x.filter=this.f||'none';x.drawImage(v,0,0,c.width,c.height)};
+    this.wk.postMessage(33);this.processedTrack=c.captureStream(30).getVideoTracks()[0]}
+  async restart(o){await this.destroy();await this.init(o)}
+  async destroy(){this.dead=true;try{this.wk&&this.wk.terminate()}catch(e){}try{this.processedTrack&&this.processedTrack.stop()}catch(e){}if(this.v)this.v.srcObject=null;this.processedTrack=undefined}
+}
+function applyFx(){FX.q=FX.q.then(_applyFx).catch(()=>{});return FX.q}
+async function _applyFx(){
+  const tr=camTrack();if(!tr){FX.cur=null;FX.proc=null;FX.trk=null;return}
+  if(tr!==FX.trk){FX.cur=null;FX.proc=null;FX.trk=tr}
+  const want=FX.bg!=='none'?'bg':(FX.touch||FX.low)?'fx':null;
+  try{
+    if(want==='bg'){
+      const L=await loadLib();if(!L.supportsBackgroundProcessors())throw new Error('unsupported');
+      const o=FX.bg==='blur'?{mode:'background-blur',blurRadius:FX.blur}:{mode:'virtual-background',imagePath:FX.img};
+      if(FX.cur!=='bg'){const p=L.BackgroundProcessor(o);await tr.setProcessor(p);FX.proc=p;FX.cur='bg'}else await FX.proc.switchTo(o);
+    }else if(want==='fx'){
+      if(FX.cur!=='fx'){const p=new FxProcessor();p.set(FX);await tr.setProcessor(p);FX.proc=p;FX.cur='fx'}else FX.proc.set(FX);
+    }else if(FX.cur){await tr.stopProcessor();FX.cur=null;FX.proc=null}
+  }catch(e){
+    toast(want==='bg'?'Efek background tidak bisa dimuat/didukung di browser ini':'Efek video gagal diterapkan');
+    if(want==='bg')FX.bg='none';else{FX.touch=false;FX.low=false}
+    try{await tr.stopProcessor()}catch(_){}FX.cur=null;FX.proc=null;
+  }
+  update();if(S.panel==='fx')renderFx();
+}
+async function setHD(on){
+  FX.hd=on;const tr=camTrack();
+  if(tr){try{await tr.restartTrack({resolution:(on?VideoPresets.h720:VideoPresets.h360).resolution})}catch(e){toast('Gagal mengubah kualitas video')}}
+  FX.cur=null;applyFx()}
+async function fxAct(a,v){
+  if(a==='blur'){FX.bg=FX.bg==='blur'?'none':'blur';applyFx();return true}
+  if(a==='hd'){await setHD(!FX.hd);return true}
+  if(a==='mirror'){FX.mirror=!FX.mirror;return true}
+  if(a==='orig'){FX.orig=!FX.orig;return true}
+  if(a==='touch'||a==='low'){
+    if(!FXOK){toast('Browser ini belum mendukung efek ini');return true}
+    if(FX.bg!=='none'){toast('Matikan background blur/virtual dulu untuk memakai efek ini');return true}
+    FX[a]=!FX[a];applyFx();return true}
+  if(a==='fxpanel'||a==='fxbg'){FX.tab=a==='fxbg'?'bg':'video';if(S.panel==='fx')renderFx();else openPanel('fx');return true}
+  if(a==='dev'&&String(v).startsWith('videoinput|')){
+    try{await room.switchActiveDevice('videoinput',v.split('|')[1])}catch(e){toast('Gagal mengganti perangkat')}
+    FX.cur=null;applyFx();return true}
+  return false}
+function mkPresets(){
+  if(FX.presets)return FX.presets;const W=1280,H=720,out=[];
+  const mk=(name,fn)=>{const c=document.createElement('canvas');c.width=W;c.height=H;fn(c.getContext('2d'));out.push({name,url:c.toDataURL('image/jpeg',.82)})};
+  const grad=(x,a,b)=>{const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,a);g.addColorStop(1,b);x.fillStyle=g;x.fillRect(0,0,W,H)};
+  mk('Langit',x=>{grad(x,'#38BDF8','#E0F2FE');x.fillStyle='#ffffffb0';[[200,160,130],[520,110,100],[900,190,150],[1120,100,90]].forEach(([a,b,r])=>{x.beginPath();x.ellipse(a,b,r,r*.45,0,0,7);x.fill()})});
+  mk('Hutan',x=>{grad(x,'#166534','#86EFAC');x.fillStyle='#14532D99';for(let i=0;i<9;i++){x.beginPath();x.arc(80+i*150,640,160+(i%3)*30,Math.PI,0);x.fill()}});
+  mk('Senja',x=>{grad(x,'#7C3AED','#FB923C');x.fillStyle='#FDE68A';x.beginPath();x.arc(640,520,150,0,7);x.fill();x.fillStyle='#4C1D95aa';x.fillRect(0,600,W,120)});
+  mk('Ruang kelas',x=>{x.fillStyle='#E2E8F0';x.fillRect(0,0,W,H);x.fillStyle='#8B5E3C';x.fillRect(0,610,W,110);x.fillRect(250,90,780,380);x.fillStyle='#1F5F46';x.fillRect(265,105,750,350);
+    x.strokeStyle='#ffffffcc';x.lineWidth=5;x.beginPath();x.moveTo(320,180);x.lineTo(700,180);x.moveTo(320,240);x.lineTo(900,240);x.moveTo(320,300);x.lineTo(620,300);x.stroke()});
+  mk('Perpustakaan',x=>{x.fillStyle='#F5E6CC';x.fillRect(0,0,W,H);const cs=['#B91C1C','#1D4ED8','#15803D','#CA8A04','#7C3AED','#0F766E'];
+    for(let r=0;r<4;r++){const y=100+r*150;for(let i=0;i<40;i++){const h=70+(i*37+r*11)%45;x.fillStyle=cs[(i+r)%6];x.fillRect(110+i*26,y+120-h,22,h)}x.fillStyle='#7C4A21';x.fillRect(100,y+120,1080,16)}});
+  mk('Kantor',x=>{grad(x,'#E5E7EB','#CBD5E1');x.fillStyle='#BAE6FD';x.fillRect(760,80,420,300);x.strokeStyle='#94A3B8';x.lineWidth=8;x.strokeRect(760,80,420,300);x.beginPath();x.moveTo(970,80);x.lineTo(970,380);x.stroke();
+    x.fillStyle='#9CA3AF';x.fillRect(0,600,W,120);x.fillStyle='#166534';x.beginPath();x.arc(160,520,90,0,7);x.fill();x.fillStyle='#92400E';x.fillRect(125,590,70,60)});
+  return FX.presets=out}
+function detachPreview(){clearInterval(FX.st);if(FX.pv&&FX.pvT){try{FX.pvT.detach(FX.pv)}catch(e){}}FX.pv=null;FX.pvT=null}
+/* indikator kecil resolusi kamera (diperbarui tiap detik selama panel terbuka) */
+function fxStat(){
+  const e=$('#fxst');if(!e)return;const tr=camTrack();if(!tr){e.textContent='Kamera mati';return}
+  let s={};try{s=tr.mediaStreamTrack.getSettings()}catch(_){}
+  const v=FX.pv,w=(v&&v.videoWidth)||s.width||0,h=(v&&v.videoHeight)||s.height||0,fps=s.frameRate?Math.round(s.frameRate):0;
+  const lb=h>=1080?'Full HD':h>=720?'HD':'standar';
+  e.textContent=w?`Resolusi kamera: ${w}×${h} · ${lb}${fps?' · '+fps+' fps':''}`:'Resolusi kamera: memuat…'}
+function attachPreview(){
+  const box=$('#fxpv');if(!box)return;const tr=camTrack();
+  if(!tr){detachPreview();box.textContent='Kamera mati';return}
+  if(FX.pv&&FX.pvT&&FX.pvT!==tr){try{FX.pvT.detach(FX.pv)}catch(e){}}
+  if(!FX.pv){FX.pv=document.createElement('video');FX.pv.autoplay=true;FX.pv.playsInline=true;FX.pv.muted=true}
+  if(FX.pv.parentNode!==box){box.textContent='';box.appendChild(FX.pv)}
+  tr.attach(FX.pv);FX.pvT=tr}
+function buildFx(sb){
+  sb.innerHTML=`<aside class="side"><h3>Video &amp; efek <a href="#" data-x="1">✕</a></h3><div class="fxbody"><div class="fxpv" id="fxpv"></div><div class="fxst" id="fxst"></div><div class="fxtabs" id="fxtabs"></div><div class="fxc" id="fxc"></div></div><input type="file" id="fxup" accept="image/*" hidden></aside>`;
+  const as=sb.firstChild;
+  as.onclick=async e=>{const b=e.target.closest('[data-t],[data-fx],[data-bg]');if(!b||b.disabled)return;
+    if(b.dataset.t){FX.tab=b.dataset.t;renderFx()}
+    else if(b.dataset.fx)await act(b.dataset.fx)
+    else if(b.dataset.bg)pickBg(b.dataset.bg)};
+  as.onchange=e=>{const t=e.target;if(t.id==='fxcam')act('dev','videoinput|'+t.value);else if(t.id==='fxup'&&t.files[0]){loadUpload(t.files[0]);t.value=''}};
+  renderFx();attachPreview();fxStat();FX.st=setInterval(fxStat,1000)}
+function renderFx(){
+  const tabs=$('#fxtabs'),c=$('#fxc');if(!tabs||!c)return;
+  tabs.innerHTML=[['video','Video'],['look','Penampilan'],['bg','Latar belakang']].map(([k,l])=>`<button data-t="${k}" class="${FX.tab===k?'on':''}">${l}</button>`).join('');
+  const sw=(n,on,dis)=>`<button class="sw${on?' on':''}" data-fx="${n}"${dis?' disabled':''} aria-pressed="${!!on}"></button>`;
+  let h='';
+  if(FX.tab==='video')h=`<div class="fxrow"><span>Kamera</span><select id="fxcam"></select></div><div class="fxrow"><span>HD (720p)</span>${sw('hd',FX.hd)}</div><div class="fxrow"><span>Rasio asli</span>${sw('orig',FX.orig)}</div><div class="fxrow"><span>Cermin video saya</span>${sw('mirror',FX.mirror)}</div>`;
+  else if(FX.tab==='look'){const dis=FX.bg!=='none'||!FXOK;
+    h=`<div class="fxrow"><span>Perbaiki penampilan</span>${sw('touch',FX.touch,dis)}</div><div class="fxrow"><span>Sesuaikan cahaya redup</span>${sw('low',FX.low,dis)}</div><p class="fxh">${!FXOK?'Browser ini belum mendukung efek ini.':FX.bg!=='none'?'Nonaktif saat latar belakang blur/virtual dipakai.':'Efek ringan: melembutkan gambar dan mencerahkan video. Terlihat juga oleh peserta lain.'}</p>`}
+  else{const P=mkPresets(),on=(k)=>(k==='none'&&FX.bg==='none')||(k==='blur'&&FX.bg==='blur'&&FX.blur===10)||(k==='blur2'&&FX.bg==='blur'&&FX.blur===22);
+    h='<div class="bgs">'+[['none','Tanpa'],['blur','Blur'],['blur2','Blur kuat']].map(([k,l])=>`<button class="bgo${on(k)?' on':''}" data-bg="${k}">${l}</button>`).join('')
+     +P.map((p,i)=>`<button class="bgo${FX.bg==='img'&&FX.img===p.url?' on':''}" data-bg="p${i}" title="${esc(p.name)}"><img src="${p.url}" alt=""><span>${esc(p.name)}</span></button>`).join('')
+     +FX.imgs.map((u,i)=>`<button class="bgo${FX.bg==='img'&&FX.img===u?' on':''}" data-bg="u${i}"><img src="${u}" alt=""><span>Gambar saya</span></button>`).join('')
+     +'<button class="bgo" data-bg="up">+ Unggah</button></div><p class="fxh">Efek background butuh browser modern dan unduhan model pertama kali.</p>'}
+  c.innerHTML=h;if(FX.tab==='video')fillCams()}
+async function fillCams(){
+  const s=$('#fxcam');if(!s)return;let ds=[],cur='';
+  try{ds=await Room.getLocalDevices('videoinput')}catch(e){}try{cur=room.getActiveDevice('videoinput')}catch(e){}
+  s.innerHTML=ds.map(d=>`<option value="${esc(d.deviceId)}"${d.deviceId===cur?' selected':''}>${esc(d.label||'Kamera')}</option>`).join('')||'<option>Tidak tersedia</option>'}
+function pickBg(k){
+  if(k==='none')FX.bg='none';
+  else if(k==='blur'||k==='blur2'){FX.bg='blur';FX.blur=k==='blur'?10:22}
+  else if(k==='up'){$('#fxup').click();return}
+  else{const u=k[0]==='p'?(mkPresets()[+k.slice(1)]||{}).url:FX.imgs[+k.slice(1)];if(!u)return;FX.bg='img';FX.img=u}
+  if(!camTrack()&&FX.bg!=='none')toast('Nyalakan kamera untuk melihat efek background');
+  applyFx();renderFx()}
+function loadUpload(file){
+  const r=new FileReader();
+  r.onload=()=>{const im=new Image();
+    im.onload=()=>{const s=Math.min(1,1280/im.width),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',.85);
+      FX.imgs.push(u);if(FX.imgs.length>3)FX.imgs.shift();FX.bg='img';FX.img=u;applyFx();renderFx()};
+    im.onerror=()=>toast('Gambar tidak bisa dibaca');im.src=r.result};
+  r.readAsDataURL(file)}
+
+/* responsif: hitung ulang tata letak saat layar diputar / ukuran berubah; panah keyboard untuk pindah halaman galeri */
+addEventListener('resize',()=>update());addEventListener('orientationchange',()=>setTimeout(update,200));
+addEventListener('keydown',e=>{const st=$('#stage');if(!room||S.left||!st||!st.classList.contains('g'))return;
+  if(/INPUT|SELECT|TEXTAREA/.test((document.activeElement||{}).tagName||''))return;
+  if(e.key==='ArrowLeft')goPage(-1);else if(e.key==='ArrowRight')goPage(1)});
 home();
 </script></body></html>
