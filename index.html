@@ -52,8 +52,9 @@ h1{font-size:34px;line-height:1.15;margin:0 0 12px}.mut{color:var(--mut)}
 .tile.me video{transform:scaleX(-1)}
 /* video utama tidak dipotong: tampil utuh (contain); bila hanya 1 video, kotak dipas 16:9 di tengah area */
 .main .tile video{object-fit:contain;background:#000}
+@supports (container-type:size){
 .main{container-type:size}
-.main.one .tile:not(.scr){justify-self:center;align-self:center;width:min(100cqw,calc(100cqh*16/9));height:min(100cqh,calc(100cqw*9/16))}
+.main.one .tile:not(.scr){justify-self:center;align-self:center;width:min(100cqw,calc(100cqh*16/9));height:min(100cqh,calc(100cqw*9/16))}}
 .nm{position:absolute;left:8px;bottom:8px;background:#000a;padding:3px 8px;border-radius:6px;font-size:12px;max-width:calc(100% - 16px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;z-index:1}
 .strip .nm{font-size:10px;left:4px;bottom:4px;padding:2px 5px}
 .tc{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;z-index:2;transition:opacity .15s}
@@ -75,11 +76,13 @@ h1{font-size:34px;line-height:1.15;margin:0 0 12px}.mut{color:var(--mut)}
 .tb button i{font-style:normal;font-size:20px}.tb button:hover,.tb .on{background:#1E293B}.tb .end{background:var(--dan)}
 @media(max-width:600px){.tb{gap:2px;padding-left:4px;padding-right:4px}.tb button{min-width:46px;padding:5px 5px;font-size:10px}.tb button i{font-size:18px}}
 @media(max-height:520px){.tb button span{display:none}.tb button{min-width:40px;padding:4px 6px}.tb{padding-top:4px;padding-bottom:4px}.top{padding:4px 10px}}
+/* HP/tablet sempit: toolbar satu baris yang bisa digeser, tombol Leave/End tetap terlihat di kanan */
+@media(max-width:700px){.tb{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;-webkit-overflow-scrolling:touch}.tb::-webkit-scrollbar{display:none}.tb button{flex:none}.tb>:first-child{margin-left:auto}.tb>:last-child{margin-right:auto}.tb .end{position:sticky;right:0;box-shadow:-8px 0 8px #000}}
 .menu{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:#1E293B;border-radius:12px;padding:6px;z-index:9;display:flex}
 .menu button{background:none;border:0;color:#fff;padding:6px 10px;cursor:pointer;font-size:24px}
 .fl{position:fixed;bottom:90px;font-size:34px;animation:up 2.4s ease-out forwards;pointer-events:none;z-index:20}
 @keyframes up{to{transform:translateY(-260px);opacity:0}}
-.toast{position:fixed;top:56px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:8px 16px;border-radius:10px;font-size:14px;z-index:30;max-width:90%}
+.toast{position:fixed;top:56px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:8px 16px;border-radius:10px;font-size:14px;z-index:100;max-width:90%}
 .pop{position:fixed;background:#1E293B;border-radius:10px;padding:6px 0;z-index:40;min-width:240px;max-width:92vw;max-height:80vh;overflow:auto;box-shadow:0 8px 30px #0008;font-size:14px;color:#E2E8F0}
 .pop .it{padding:8px 14px;cursor:pointer}.pop .it:hover{background:#334155}.pop .hd{padding:6px 14px;font-weight:700;font-size:12px;color:#94A3B8}.pop hr{border:0;border-top:1px solid #334155;margin:4px 0}
 .pop .red{color:#fff;background:var(--dan);margin:4px 8px;border-radius:8px;text-align:center}
@@ -107,6 +110,21 @@ h1{font-size:34px;line-height:1.15;margin:0 0 12px}.mut{color:var(--mut)}
 .bgo{aspect-ratio:16/9;border-radius:8px;border:2px solid transparent;background:#1E293B;cursor:pointer;overflow:hidden;font-size:12px;display:grid;place-items:center;color:#E2E8F0;padding:0;position:relative}
 .bgo.on{border-color:var(--pri)}.bgo img{width:100%;height:100%;object-fit:cover;display:block}
 .bgo span{position:absolute;left:0;right:0;bottom:0;background:#000a;font-size:10px;padding:1px 0}
+/* ---- Ruang tunggu, info meeting, hide profile pictures ---- */
+.cn{display:none;position:absolute;inset:0;place-items:center;text-align:center;padding:8px;font-weight:700;font-size:clamp(13px,2.2vw,26px);pointer-events:none;overflow-wrap:anywhere}
+#room.hidepic .tile.nov .cn{display:grid}
+#room.hidepic .tile.nov .av{display:none}
+.strip .cn{font-size:12px}
+.wt{background:#1E293B;border-radius:10px;padding:6px 10px;margin-bottom:10px}
+.wth{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;padding:4px 0}
+.inf{min-width:min(380px,88vw)}
+.ir{display:flex;justify-content:space-between;gap:16px}
+.ib{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.ib .btn{padding:9px 12px;font-size:13px}
+.inf input{background:#0F172A;color:#fff;border-color:#334155;margin:4px 0 0}
+.inf .btn.alt{background:#334155;color:#fff;border-color:#475569}
+.inf small{color:#94A3B8}
+#binfo{text-decoration:none}
 #room.mini{inset:auto 12px 12px auto;width:300px;height:200px;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px #000a;z-index:60;cursor:pointer}
 #room.mini .top,#room.mini .tb,#room.mini #sidebox,#room.mini .tc,#room.mini .stripw,#room.mini .pg{display:none}#room.mini .main{padding:0}
 body.minib::after{content:"Meeting berjalan di jendela mini. Klik jendela mini untuk kembali.";position:fixed;left:0;right:0;top:40%;text-align:center;color:var(--mut);padding:20px}
@@ -120,53 +138,95 @@ const colr=n=>COL[[...String(n)].reduce((a,c)=>a+c.charCodeAt(0),0)%COL.length];
 const ini=n=>String(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 const fmt=id=>id.replace(/^(\d{3})(\d{4})(\d+)$/,'$1 $2 $3');
 /* view: speaker | gallery | dynamic | multi ; pins = daftar identity yang di-pin (hanya untuk tampilan saya) */
-const S={name:'',mid:'',pass:'',host:false,chat:[],hands:{},panel:null,left:false,view:'speaker',hideSelf:false,hideNV:false,timer:true,shareOk:true,rec:false,spk:'',spkT:0,mr:null,mx:'',pins:[],page:0};
-let room,tick,t0=0,raf=0,sig='';const T=new Map();
+const S={wr:false,lock:false,hidePic:false,wait:new Map(),adm:new Set(),admitted:false,sent:false,jt:0,name:'',mid:'',pass:'',host:false,chat:[],hands:{},panel:null,left:false,view:'speaker',hideSelf:false,hideNV:false,timer:true,shareOk:true,rec:false,spk:'',spkT:0,mr:null,mx:'',pins:[],page:0};
+let room,tick,t0=0,raf=0,sig='',wl=null;const T=new Map();
 const DEFAULT_API='https://nexameet-token.usepzaenalmutaqin092.workers.dev';
 function getApi(){let a=DEFAULT_API;try{a=localStorage.getItem('nx_api')||a}catch(e){}
   if(!a){a=(prompt('Tempel URL Worker token')||'').trim();try{a&&localStorage.setItem('nx_api',a)}catch(e){}}return a}
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
 const isHost=p=>{try{return JSON.parse(p.metadata||'{}').role==='host'}catch(e){return false}};
 
+/* ---- Link undangan: https://.../#join=ID.PASSCODE -> beranda hanya berisi nama, meeting ID, passcode (tanpa New Meeting) ---- */
+function parseInvite(){const m=(location.hash||'').match(/^#join(?:=(\d*)(?:\.(\w*))?)?$/);return m?{id:m[1]||'',pass:m[2]||''}:null}
+const inviteLink=()=>location.href.split('#')[0].split('?')[0]+'#join='+S.mid+'.'+S.pass;
+const inviteText=()=>`Bergabung ke NexaMeet\nMeeting ID: ${fmt(S.mid)}\nPasscode: ${S.pass}\nLink (cukup isi nama): ${inviteLink()}`;
+async function copyTxt(t){try{await navigator.clipboard.writeText(t);return true}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}a.remove();return ok}}
 function home(){
-  app.innerHTML=`<div class="wrap"><div class="logo">Nexa<span>Meet</span></div><div class="hero"><div><h1>Rapat video untuk semua jaringan.</h1><p class="mut">Buat meeting, bagikan ID dan passcode. Peserta dari Wi-Fi, data seluler, HP, atau komputer bisa bergabung.</p></div>
+  const inv=parseInvite();
+  app.innerHTML=`<div class="wrap"><div class="logo">Nexa<span>Meet</span></div><div class="hero"><div>${inv?'<h1>Anda diundang bergabung.</h1><p class="mut">Isi nama Anda, lalu tekan Join Meeting. Izinkan kamera dan mikrofon saat diminta.</p>':'<h1>Rapat video untuk semua jaringan.</h1><p class="mut">Buat meeting, bagikan ID dan passcode. Peserta dari Wi-Fi, data seluler, HP, atau komputer bisa bergabung.</p>'}</div>
   <div class="card"><label>Nama Anda</label><input id="n" value="${esc(S.name)}" placeholder="Contoh: Usep">
-  <button class="btn" id="nm" style="width:100%">📹 New Meeting</button><hr style="border:0;border-top:1px solid var(--bd);margin:16px 0">
-  <label>Meeting ID</label><input id="id" inputmode="numeric" placeholder="123 4567 8901"><label>Passcode</label><input id="pc" inputmode="numeric">
-  <button class="btn alt" id="jn" style="width:100%">Join Meeting</button></div></div><p class="mut" style="text-align:center;font-size:13px;margin-top:28px">Di damel ku Usep Zaenal Mutaqin Ver.08112026</p></div>`;
+  ${inv?'':'<button class="btn" id="nm" style="width:100%">📹 New Meeting</button><hr style="border:0;border-top:1px solid var(--bd);margin:16px 0">'}
+  <label>Meeting ID</label><input id="id" inputmode="numeric" placeholder="123 4567 8901" value="${inv&&inv.id?fmt(inv.id):''}"><label>Passcode</label><input id="pc" inputmode="numeric" value="${inv?esc(inv.pass):''}">
+  <button class="btn${inv?'':' alt'}" id="jn" style="width:100%">Join Meeting</button></div></div><p class="mut" style="text-align:center;font-size:13px;margin-top:28px">Di damel ku Usep Zaenal Mutaqin Ver.08112026</p></div>`;
   const go=async action=>{const n=$('#n').value.trim();if(!n)return toast('Isi nama dulu');S.name=n;
     if(action==='join'){S.mid=$('#id').value.replace(/\D/g,'');S.pass=$('#pc').value.trim();if(S.mid.length<8)return toast('Meeting ID tidak valid')}
     const b=$(action==='create'?'#nm':'#jn'),old=b.textContent;b.disabled=true;b.textContent='Menghubungkan...';
     try{await enter(action)}catch(e){toast(e.message||'Gagal terhubung');b.disabled=false;b.textContent=old}};
-  $('#nm').onclick=()=>go('create');$('#jn').onclick=()=>go('join');
+  if($('#nm'))$('#nm').onclick=()=>go('create');$('#jn').onclick=()=>go('join');
 }
 async function enter(action){
   const api=getApi();if(!api)throw new Error('URL server token belum diisi');
   let d;try{const r=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,name:S.name,room:S.mid,pass:S.pass})});d=await r.json();if(!r.ok)throw new Error(d.error||'Ditolak server')}
   catch(e){throw new Error(e.message==='Failed to fetch'?'Tidak bisa menghubungi server token':e.message)}
   S.mid=d.room;if(d.pass)S.pass=d.pass;S.host=action==='create';S.chat=[];S.hands={};S.panel=null;S.left=false;S.pins=[];S.page=0;S.mx='';S.spk='';fxReset();
+  S.wr=false;S.lock=false;S.hidePic=false;S.shareOk=true;S.wait=new Map();S.adm=new Set();S.admitted=false;S.sent=false;clearTimeout(S.jt);
   room=new Room({adaptiveStream:true,dynacast:true,videoCaptureDefaults:{resolution:VideoPresets.h360}});
   const E=RoomEvent;
   [E.ParticipantConnected,E.ParticipantDisconnected,E.TrackMuted,E.TrackUnmuted,E.TrackSubscribed,E.LocalTrackPublished,E.LocalTrackUnpublished,E.ActiveSpeakersChanged,E.ParticipantMetadataChanged,E.ParticipantNameChanged].forEach(e=>room.on(e,update));
-  room.on(E.ParticipantConnected,p=>{toast((p.name||'Peserta')+' bergabung');if(S.hands[room.localParticipant.identity])send({t:'hand',v:1});if(S.host&&!S.shareOk)send({t:'cmd',c:'shareok',v:0})});
-  room.on(E.ParticipantDisconnected,p=>{delete S.hands[p.identity]});
+  room.on(E.ParticipantConnected,()=>{if(!S.host&&!S.admitted)tryJoin()});
+  room.on(E.ParticipantMetadataChanged,()=>{if(!S.host&&!S.admitted)tryJoin()});
+  room.on(E.TrackPublished,pub=>{if(S.admitted){try{pub.setSubscribed(true)}catch(e){}}});
+  /* S.adm sengaja TIDAK dikurangi di sini: saat koneksi putus-sambung (reconnect penuh) LiveKit memutus lalu menyambung ulang semua peserta,
+     dan izin masuk harus tetap berlaku. Antrean tunggu & status host baru dibersihkan bila peserta tidak kembali dalam 6 detik. */
+  room.on(E.ParticipantDisconnected,p=>{const id=p.identity;delete S.hands[id];
+    if(S.host&&S.wait.has(id))setTimeout(()=>{if(!S.left&&room&&!room.remoteParticipants.has(id)&&S.wait.delete(id))update()},6000);
+    if(!S.host&&!S.admitted&&isHost(p))setTimeout(()=>{if(!S.left&&!S.admitted&&![...room.remoteParticipants.values()].some(isHost))leave('Host meninggalkan meeting.')},6000);
+    update()});
   room.on(E.TrackSubscribed,(t,pub,p)=>{if(t.kind==='audio'){const a=t.attach();a.dataset.a=p.identity;document.body.appendChild(a)}});
   room.on(E.TrackUnsubscribed,t=>{if(t.kind==='audio')t.detach().forEach(x=>x.remove());update()});
   room.on(E.Disconnected,()=>{if(!S.left)leave('Koneksi terputus',1)});
   room.on(E.ActiveSpeakersChanged,sp=>{const s=sp.find(x=>!x.isLocal);if(s&&s.identity!==S.spk&&Date.now()-S.spkT>1500){S.spk=s.identity;S.spkT=Date.now();update()}});
   room.on(E.DataReceived,onData);
+  /* peserta menyambung dengan autoSubscribe:false -> setelah reconnect penuh, langganan audio/video harus dipulihkan manual */
+  room.on(E.Reconnected,()=>{if(S.admitted)room.remoteParticipants.forEach(p=>p.trackPublications.forEach(pub=>{try{pub.setSubscribed(true)}catch(e){}}))});
+  room.on(E.AudioPlaybackStatusChanged,()=>{if(S.admitted&&!S.left&&!room.canPlaybackAudio)audioPrompt()});
   room.on(E.LocalTrackPublished,pub=>{if(pub.source===Track.Source.Camera){FX.cur=null;applyFx();if(S.panel==='fx')setTimeout(attachPreview,300)}});
-  await room.connect(d.url,d.token);
+  /* host langsung masuk; peserta menyambung tanpa berlangganan audio/video dan tanpa mic/kamera sampai host mengizinkan */
+  await room.connect(d.url,d.token,{autoSubscribe:S.host});
+  if(S.host){S.adm.add(room.localParticipant.identity);S.admitted=true;await startRoom()}
+  else{waitScreen('Menghubungi host…');tryJoin();S.jt=setTimeout(()=>{if(!S.admitted&&!S.left)leave('Host tidak merespons. Pastikan host sudah membuka meeting, lalu coba lagi.')},15000)}
+}
+/* pesan error perangkat yang jelas (bukan sekadar "diblokir") */
+function devErr(e,k){const n=(e&&e.name)||'',w=k==='cam'?'Kamera':'Mikrofon';
+  if(k==='scr')return toast('Berbagi layar dibatalkan atau tidak diizinkan');
+  toast(n==='NotAllowedError'||n==='SecurityError'?w+' ditolak: izinkan akses '+w.toLowerCase()+' untuk situs ini di pengaturan browser'
+    :n==='NotReadableError'||n==='AbortError'?w+' sedang dipakai aplikasi lain (tutup Zoom/aplikasi lain, lalu nyalakan lagi)'
+    :n==='NotFoundError'||n==='OverconstrainedError'?w+' tidak ditemukan di perangkat ini':w+' tidak bisa diakses')}
+/* tombol ajakan bila browser (terutama iPhone/Safari) memblokir pemutaran suara otomatis */
+function audioPrompt(){if($('#aud'))return;const b=document.createElement('button');b.id='aud';b.className='toast';b.style.cssText='border:0;cursor:pointer;background:#2563EB';b.textContent='🔊 Ketuk di sini untuk mengaktifkan suara';
+  b.onclick=async()=>{try{await room.startAudio()}catch(e){}b.remove()};document.body.appendChild(b)}
+/* cegah layar HP mati saat meeting */
+async function wakeLock(){try{if(navigator.wakeLock&&!wl&&!S.left){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&room&&S.admitted&&!S.left)wakeLock()});
+async function startRoom(){
   const lp=room.localParticipant;
-  try{await lp.setMicrophoneEnabled(true)}catch(e){toast('Mikrofon tidak tersedia/diblokir')}
-  try{await lp.setCameraEnabled(true)}catch(e){toast('Kamera tidak tersedia/diblokir')}
+  try{await lp.setMicrophoneEnabled(true)}catch(e){devErr(e,'mic')}
+  if(S.left)return;
+  try{await lp.setCameraEnabled(true)}catch(e){devErr(e,'cam')}
+  if(S.left)return;
   t0=Date.now();clearInterval(tick);
-  buildRoom();
+  buildRoom();wakeLock();try{Promise.resolve(room.startAudio()).catch(()=>{})}catch(e){}
   tick=setInterval(()=>{const e=$('#clk');if(e){const s=Math.floor((Date.now()-t0)/1000);e.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}},1000);
 }
-const send=(m,to)=>room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify(m)),to?{reliable:true,destinationIdentities:[to]}:{reliable:true}).catch(()=>{});
+/* send tanpa tujuan = hanya ke peserta yang sudah diizinkan masuk; peserta di ruang tunggu tidak menerima chat/pesan lain */
+function pub(m,dest){if(!dest.length)return Promise.resolve();return room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify(m)),{reliable:true,destinationIdentities:dest}).catch(()=>{})}
+const send=(m,to)=>pub(m,to?[to]:[...S.adm].filter(id=>id!==room.localParticipant.identity&&room.remoteParticipants.has(id)));
+const sendAll=m=>pub(m,[...room.remoteParticipants.keys()]);
 function onData(buf,p){let d;try{d=JSON.parse(new TextDecoder().decode(buf))}catch(e){return}if(!p)return;
   const me=room.localParticipant.identity;
+  if(d.t==='join'){hostJoin(p);return}
+  if(isHost(p)&&(d.t==='wait'||d.t==='admit'||d.t==='deny'||d.t==='state')){hostMsg(d);return}
+  if(!shown(p))return;
   if(d.t==='chat'){const m=String(d.m).slice(0,500);const n=p.name+(d.dm?' (pribadi)':'');S.chat.push({n,m});if(S.panel==='chat')addMsg(n,m);else toast(n+': '+m)}
   else if(d.t==='rx')fly(String(d.e).slice(0,4));
   else if(d.t==='hand'){S.hands[p.identity]=!!d.v;update()}
@@ -176,6 +236,51 @@ function onData(buf,p){let d;try{d=JSON.parse(new TextDecoder().decode(buf))}cat
     else if(d.c==='shareok'){S.shareOk=!!d.v;if(!d.v&&room.localParticipant.isScreenShareEnabled)room.localParticipant.setScreenShareEnabled(false);toast(d.v?'Host mengizinkan berbagi layar':'Berbagi layar dinonaktifkan oleh host')}
     else if(d.c==='mute'&&(!d.to||d.to===me)&&!S.host){room.localParticipant.setMicrophoneEnabled(false);toast('Host mematikan mikrofon Anda')}}}
 
+/* ---- Ruang tunggu / kunci meeting / admit ----
+   Dijalankan di sisi aplikasi lewat pesan data LiveKit. Peserta yang menunggu tidak berlangganan audio/video
+   dan tidak menerima chat; ini bukan pengganti penegakan di server token. */
+const shown=p=>!room||p===room.localParticipant||isHost(p)||S.adm.has(p.identity);
+const rlist=()=>[...room.remoteParticipants.values()].filter(shown);
+const plist=()=>[room.localParticipant,...rlist()];
+function bstate(){if(!S.host||!room)return;send({t:'state',adm:[...S.adm],wr:S.wr?1:0,lock:S.lock?1:0,hp:S.hidePic?1:0,so:S.shareOk?1:0})}
+function tryJoin(){if(S.host||S.admitted||S.sent||S.left||!room)return;const h=[...room.remoteParticipants.values()].find(isHost);if(h){S.sent=true;send({t:'join'},h.identity)}}
+function hostJoin(p){
+  if(!S.host)return;const id=p.identity,nm=p.name||'Peserta';
+  if(S.adm.has(id)){send({t:'admit'},id);bstate();return}
+  if(S.wait.has(id))return;
+  if(S.lock){send({t:'deny',c:'lock'},id);return}
+  if(S.wr){S.wait.set(id,nm);send({t:'wait'},id);toast(nm+' menunggu di ruang tunggu');update()}
+  else{doAdmit(id);toast(nm+' bergabung');update()}}
+function doAdmit(id,quiet){S.wait.delete(id);S.adm.add(id);send({t:'admit'},id);if(!quiet)bstate()}
+function admit(id){if(!S.wait.has(id))return;const nm=S.wait.get(id);doAdmit(id);toast(nm+' diizinkan masuk');update()}
+function admitAll(){const ids=[...S.wait.keys()];if(!ids.length)return toast('Ruang tunggu kosong');ids.forEach(id=>doAdmit(id,1));bstate();toast(ids.length+' peserta diizinkan masuk');update()}
+function reject(id){if(!S.wait.has(id))return;S.wait.delete(id);send({t:'deny',c:'rej'},id);update()}
+function waitScreen(msg){app.innerHTML=`<div class="wrap" style="max-width:520px;text-align:center"><div class="logo">Nexa<span>Meet</span></div><div class="card"><h2>Ruang tunggu</h2><p class="mut" id="wmsg">${esc(msg)}</p><p class="mut" style="font-size:13px">Meeting ID ${esc(fmt(S.mid))}</p><button class="btn alt" id="wx">Batal</button></div></div>`;$('#wx').onclick=()=>leave('Anda keluar dari ruang tunggu')}
+function hostMsg(d){
+  if(S.host)return;
+  if(d.t==='wait'){clearTimeout(S.jt);const e=$('#wmsg');if(e)e.textContent='Menunggu host mengizinkan Anda masuk…'}
+  else if(d.t==='deny')leave(d.c==='lock'?'Meeting ini sedang dikunci oleh host.':'Host tidak mengizinkan Anda masuk.');
+  else if(d.t==='admit')onAdmitted();
+  else if(d.t==='state')applyState(d)}
+async function onAdmitted(){
+  if(S.admitted||S.left)return;S.admitted=true;clearTimeout(S.jt);
+  room.remoteParticipants.forEach(p=>p.trackPublications.forEach(pub=>{try{pub.setSubscribed(true)}catch(e){}}));
+  await startRoom()}
+function applyState(d){
+  const old=S.adm,me=room.localParticipant.identity;S.adm=new Set((d.adm||[]).map(String));
+  S.wr=!!d.wr;S.lock=!!d.lock;S.hidePic=!!d.hp;if(d.so!==undefined)S.shareOk=!!d.so;
+  if(old.size){const add=[...S.adm].filter(id=>!old.has(id)&&id!==me);
+    add.forEach(id=>{const p=room.remoteParticipants.get(id);if(p&&!isHost(p))toast((p.name||'Peserta')+' bergabung')});
+    if(add.length&&S.hands[me])send({t:'hand',v:1})}
+  update()}
+function hostAct(a){
+  if(a==='wr'){S.wr=!S.wr;bstate();toast(S.wr?'Ruang tunggu aktif: peserta baru menunggu persetujuan Anda':'Ruang tunggu dinonaktifkan');return true}
+  if(a==='lock'){S.lock=!S.lock;bstate();toast(S.lock?'Meeting dikunci: peserta baru tidak bisa masuk':'Meeting dibuka kembali');return true}
+  if(a==='hp'){S.hidePic=!S.hidePic;bstate();toast(S.hidePic?'Foto profil disembunyikan':'Foto profil ditampilkan');return true}
+  if(a==='waitp'){if(S.panel!=='part')openPanel('part');return true}
+  if(a==='admitall'){admitAll();return true}
+  return false}
+
 /* ---- Tampilan: dibangun sekali, lalu hanya diperbarui sebagian (elemen video dipindah, tidak dibuat ulang) ---- */
 function viewHtml(){
   return `<div class="hd">Tampilan</div>`+it('view','speaker','Speaker',S.view==='speaker')+it('view','gallery','Gallery',S.view==='gallery')+it('view','dynamic','Dynamic gallery',S.view==='dynamic')+it('view','multi','Multi-speaker',S.view==='multi')+'<hr>'
@@ -183,7 +288,7 @@ function viewHtml(){
    +it('hs','','Sembunyikan tampilan saya',S.hideSelf)+it('hn','','Sembunyikan peserta tanpa video',S.hideNV)+'<hr>'+it('tm','','Tampilkan timer meeting',S.timer)+it('fs','','Layar penuh')}
 function buildRoom(){
   const b=(id,l)=>`<button id="${id}"><i></i><span>${l}</span></button>`,car=id=>`<button class="car" id="${id}">▴</button>`;
-  app.innerHTML=`<div id="room"><div class="top"><span>🛡️ ID ${fmt(S.mid)} · Pass ${esc(S.pass)} <a href="#" id="cp">Salin undangan</a></span><span><b id="recb" hidden style="color:#F87171">● REC </b><a href="#" id="bpip">— Minimize</a> · <a href="#" id="bview">⊞ Tampilan</a> · <span id="clk">00:00</span></span></div>
+  app.innerHTML=`<div id="room"><div class="top"><span><a href="#" id="binfo" title="Info meeting">🛡️ NexaMeet</a></span><span><b id="recb" hidden style="color:#F87171">● REC </b><a href="#" id="bpip">— Minimize</a> · <a href="#" id="bview">⊞ Tampilan</a> · <span id="clk">00:00</span></span></div>
   <div class="mid"><div class="stage" id="stage">
     <div class="stripw" id="stripw" hidden><button class="sa" id="sl" title="Geser kiri">◀</button><div class="strip" id="strip"></div><button class="sa" id="sr" title="Geser kanan">▶</button></div>
     <div class="main" id="main"></div>
@@ -192,10 +297,12 @@ function buildRoom(){
   <div class="tb">${b('bm','Audio')}${car('cm')}${b('bv','Video')}${car('cv')}${b('bp','Peserta')}${b('bc','Chat')}${b('br','React')}${b('bh','Angkat')}${b('bs','Share')}${b('bvw','Tampilan')}${S.host?b('bk','Host tools'):''}${b('bmo','More')}<button id="be" class="end"><i>⏻</i><span>${S.host?'End':'Leave'}</span></button></div><div id="menubox"></div></div>`;
   T.clear();S.panel=null;sig='';
   const lp=()=>room.localParticipant,f=(id,fn)=>{const e=$('#'+id);if(e)e.onclick=ev=>{ev.preventDefault();fn()}};
-  const tog=async fn=>{try{await fn()}catch(e){toast('Tidak bisa mengakses perangkat')}update()};
-  f('bm',()=>tog(()=>lp().setMicrophoneEnabled(!lp().isMicrophoneEnabled)));
-  f('bv',()=>tog(()=>lp().setCameraEnabled(!lp().isCameraEnabled)));
-  f('bs',()=>{if(!S.host&&!S.shareOk&&!lp().isScreenShareEnabled)return toast('Host tidak mengizinkan berbagi layar');tog(()=>lp().setScreenShareEnabled(!lp().isScreenShareEnabled))});
+  const tog=async(fn,k)=>{try{await fn()}catch(e){devErr(e,k)}update()};
+  f('bm',()=>tog(()=>lp().setMicrophoneEnabled(!lp().isMicrophoneEnabled),'mic'));
+  f('bv',()=>tog(()=>lp().setCameraEnabled(!lp().isCameraEnabled),'cam'));
+  f('bs',()=>{if(!S.host&&!S.shareOk&&!lp().isScreenShareEnabled)return toast('Host tidak mengizinkan berbagi layar');
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia)return toast('Berbagi layar tidak didukung di perangkat/browser ini (umumnya hanya tersedia di laptop/PC)');
+    tog(()=>lp().setScreenShareEnabled(!lp().isScreenShareEnabled),'scr')});
   f('bp',()=>openPanel('part'));f('bc',()=>openPanel('chat'));
   f('br',()=>{const m=$('#menubox');m.innerHTML=m.innerHTML?'':`<div class="menu">${['👍','👏','❤️','😂','🎉'].map(e=>`<button data-e="${e}">${e}</button>`).join('')}</div>`});
   f('bh',()=>{const id=lp().identity,v=!S.hands[id];S.hands[id]=v;send({t:'hand',v:v?1:0});update()});
@@ -212,13 +319,13 @@ function buildRoom(){
   let tx=0;const gw=$('#gw');gw.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
   gw.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)goPage(dx<0?1:-1)},{passive:true});
   $('#room').addEventListener('click',e=>{if($('#room').classList.contains('mini')&&!e.target.closest('.top,.tb'))setMini(false)});
-  f('bk',()=>pop('bk',`<div class="hd">Host tools</div>`+it('mall','','Mute semua peserta')+it('sok','','Izinkan peserta berbagi layar',S.shareOk)));
+  f('bk',()=>pop('bk',`<div class="hd">Host tools</div>`+it('wr','','Aktifkan ruang tunggu',S.wr)+it('lock','','Kunci meeting',S.lock)+it('hp','','Sembunyikan foto profil',S.hidePic)+'<hr>'+it('waitp','','Peserta menunggu ('+S.wait.size+')…')+(S.wait.size?it('admitall','','Izinkan semua masuk'):'')+'<hr>'+it('mall','','Mute semua peserta')+it('sok','','Izinkan peserta berbagi layar',S.shareOk)));
   f('bmo',()=>pop('bmo',it('fxpanel','','Video & efek')+it('rec','',S.rec?'Stop recording':'Record (rekam tab ini)')+it('info','','Info meeting')+it('fs','','Layar penuh')));
   f('be',()=>pop('be',(S.host?`<div class="it red" data-a="endall">Akhiri meeting untuk semua</div>`:'')+`<div class="it${S.host?'':' red'}" data-a="leave">Tinggalkan meeting</div><div class="it" data-a="x">Batal</div>`));
-  f('cp',()=>{try{navigator.clipboard.writeText(`Bergabung ke NexaMeet\nMeeting ID: ${fmt(S.mid)}\nPasscode: ${S.pass}\nBuka: ${location.href.split('#')[0]}`)}catch(e){}toast('Undangan disalin')});
+  f('binfo',()=>info());
   $('#menubox').onclick=e=>{const x=e.target.closest('[data-e]');if(!x)return;send({t:'rx',e:x.dataset.e});fly(x.dataset.e);$('#menubox').innerHTML=''};
   $('#sidebox').onclick=e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();
-    if(a.dataset.x)openPanel(null);else if(a.dataset.m)send({t:'cmd',c:'mute',to:a.dataset.m});else if(a.dataset.k)send({t:'cmd',c:'kick',to:a.dataset.k});else if(a.dataset.p)togglePin(a.dataset.p)};
+    if(a.dataset.x)openPanel(null);else if(a.dataset.m)send({t:'cmd',c:'mute',to:a.dataset.m});else if(a.dataset.k)send({t:'cmd',c:'kick',to:a.dataset.k});else if(a.dataset.p)togglePin(a.dataset.p);else if(a.dataset.ad)admit(a.dataset.ad);else if(a.dataset.rj)reject(a.dataset.rj);else if(a.dataset.aa)admitAll()};
   update();
 }
 function update(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(!room||S.left||!$('#grid'))return;syncTiles();syncBar();syncSide()})}
@@ -230,8 +337,8 @@ function togglePin(id){
     if(S.view==='gallery'||S.view==='dynamic'){S.view='speaker';toast('Peserta di-pin — beralih ke tampilan Speaker')}else toast('Peserta di-pin')}
   S.mx='';update()}
 function tileFor(k,cls,pid){let t=T.get(k);if(!t){const el=document.createElement('div');el.className='tile '+cls;
-  el.innerHTML='<span class="nm"></span><div class="tc"><button class="pn" title="Pin / Lepas pin">📌</button><button class="mx" title="Maximize / Restore">⛶</button></div>';
-  const t0={el,nm:el.querySelector('.nm'),pnb:el.querySelector('.pn'),mxb:el.querySelector('.mx'),media:null,tr:null,an:'',pid};
+  el.innerHTML='<span class="nm"></span><span class="cn"></span><div class="tc"><button class="pn" title="Pin / Lepas pin">📌</button><button class="mx" title="Maximize / Restore">⛶</button></div>';
+  const t0={el,nm:el.querySelector('.nm'),cn:el.querySelector('.cn'),pnb:el.querySelector('.pn'),mxb:el.querySelector('.mx'),media:null,tr:null,an:'',pid};
   el.ondblclick=()=>{S.mx=S.mx===k?'':k;update()};
   t0.mxb.onclick=ev=>{ev.stopPropagation();S.mx=S.mx===k?'':k;update()};
   t0.pnb.onclick=ev=>{ev.stopPropagation();togglePin(pid)};
@@ -245,6 +352,7 @@ function setMedia(t,pub,name){
     if(t.tr||!t.media){dropMedia(t);const a=document.createElement('div');a.className='av';t.el.insertBefore(a,t.nm);t.media=a}
     if(t.an!==name){t.an=name;t.media.textContent=ini(name);t.media.style.background=colr(name)}
   }
+  t.el.classList.toggle('nov',!!t.media&&t.media.tagName!=='VIDEO');
 }
 /* menempatkan tile ke container sesuai urutan; elemen yang pindah diputar ulang agar video tidak berhenti */
 function place(par,keys){
@@ -258,7 +366,7 @@ function pickGrid(n,W,H,mc,mr){if(n<=0)return[1,1];let best=[mc,mr],bs=1e9;
 function stripArrows(){const w=$('#stripw'),s=$('#strip');if(!s||!w||w.hidden)return;const l=$('#sl'),r=$('#sr'),can=s.scrollWidth>s.clientWidth+2;
   l.style.visibility=r.style.visibility=can?'visible':'hidden';l.disabled=s.scrollLeft<=1;r.disabled=s.scrollLeft+s.clientWidth>=s.scrollWidth-1}
 function syncTiles(){
-  const lp=room.localParticipant,ps=[lp,...room.remoteParticipants.values()],keep=new Set();
+  const lp=room.localParticipant,ps=plist(),keep=new Set();
   const host=ps.find(isHost)||null,remotes=ps.filter(p=>p!==lp);
   const spkId=remotes.some(p=>p.identity===S.spk)?S.spk:null;
   const cams=[],scr=[];
@@ -266,7 +374,7 @@ function syncTiles(){
   [...ps].sort((a,b)=>ord(a)-ord(b)).forEach(p=>{const me=p===lp,nm=p.name||'Peserta',id=p.identity;
     if(p.isScreenShareEnabled){const k='s:'+id,t=tileFor(k,'scr',id);keep.add(k);setMedia(t,p.getTrackPublication(Track.Source.ScreenShare),null);t.nm.textContent='Layar '+nm;t.el.classList.remove('spk');scr.push(k)}
     if((me&&S.hideSelf)||(S.hideNV&&!p.isCameraEnabled&&!p.isScreenShareEnabled))return;
-    const k='c:'+id,t=tileFor(k,me?'me':'',id),pinned=S.pins.includes(id);keep.add(k);cams.push(k);
+    const k='c:'+id,t=tileFor(k,me?'me':'',id),pinned=S.pins.includes(id);keep.add(k);cams.push(k);t.cn.textContent=nm;
     setMedia(t,p.isCameraEnabled?p.getTrackPublication(Track.Source.Camera):null,nm);
     t.el.classList.toggle('spk',!!p.isSpeaking);t.pnb.classList.toggle('on',pinned);
     t.nm.textContent=(pinned?'📌 ':'')+(p.isMicrophoneEnabled?'':'🔇 ')+(S.hands[id]?'✋ ':'')+nm+(me?' (Anda)':'')+(isHost(p)?' · Host':'')});
@@ -322,12 +430,13 @@ function syncTiles(){
   stripArrows();
 }
 function syncBar(){
-  const lp=room.localParticipant,n=room.remoteParticipants.size+1,hand=!!S.hands[lp.identity];
+  const lp=room.localParticipant,n=plist().length,hand=!!S.hands[lp.identity];
   const set=(id,ic,l,on)=>{const b=$('#'+id);if(!b)return;b.firstChild.textContent=ic;if(l)b.lastChild.textContent=l;b.classList.toggle('on',!!on)};
-  set('bm',lp.isMicrophoneEnabled?'🎤':'🔇');set('bv',lp.isCameraEnabled?'📹':'🚫');set('bp','👥','Peserta '+n,S.panel==='part');
+  set('bm',lp.isMicrophoneEnabled?'🎤':'🔇');set('bv',lp.isCameraEnabled?'📹':'🚫');set('bp','👥','Peserta '+n+(S.host&&S.wait.size?' ⏳'+S.wait.size:''),S.panel==='part');
   set('bc','💬',null,S.panel==='chat');set('br','😀');set('bh','✋',hand?'Turunkan':'Angkat',hand);
   set('bs','🖥️',lp.isScreenShareEnabled?'Stop Share':'Share',lp.isScreenShareEnabled);set('bvw','⊞');set('bk','🛡️');set('bmo','⋯');const rb=$('#recb');if(rb)rb.hidden=!S.rec;const ck=$('#clk');if(ck)ck.style.display=S.timer?'':'none';
-  const rm=$('#room');if(rm){rm.classList.toggle('nomirror',!FX.mirror);rm.classList.toggle('orig',FX.orig)}
+  const rm=$('#room');if(rm){rm.classList.toggle('nomirror',!FX.mirror);rm.classList.toggle('orig',FX.orig);rm.classList.toggle('hidepic',!!S.hidePic)}
+  const bi=$('#binfo');if(bi)bi.textContent='🛡️ NexaMeet'+(S.lock?' 🔒':'');
 }
 function openPanel(n){
   S.panel=(n&&S.panel!==n)?n:null;sig='';const sb=$('#sidebox');detachPreview();sb.innerHTML='';
@@ -342,21 +451,23 @@ function openPanel(n){
 }
 function syncSide(){
   if(S.panel==='chat')fillTo();if(S.panel!=='part'||!room)return;
-  const lp=room.localParticipant,ps=[lp,...room.remoteParticipants.values()];
-  const s=ps.map(p=>[p.identity,p.name,p.isMicrophoneEnabled,S.hands[p.identity],isHost(p),S.pins.includes(p.identity)].join('|')).join(';');
+  const lp=room.localParticipant,ps=plist(),wt=S.host?[...S.wait]:[];
+  const s=ps.map(p=>[p.identity,p.name,p.isMicrophoneEnabled,S.hands[p.identity],isHost(p),S.pins.includes(p.identity)].join('|')).join(';')+'#'+wt.map(x=>x.join('|')).join(';');
   if(s===sig)return;sig=s;$('#pt').textContent='Peserta ('+ps.length+')';
-  $('#plist').innerHTML=ps.map(p=>`<div class="pr"><span>${S.pins.includes(p.identity)?'📌 ':''}${S.hands[p.identity]?'✋ ':''}${esc(p.name||'Peserta')}${p===lp?' (Anda)':''}${isHost(p)?' · Host':''}</span><span>${p.isMicrophoneEnabled?'🎤':'🔇'} <a href="#" data-p="${esc(p.identity)}">${S.pins.includes(p.identity)?'lepas pin':'pin'}</a>${S.host&&p!==lp?` <a href="#" data-m="${esc(p.identity)}">mute</a><a href="#" data-k="${esc(p.identity)}">keluarkan</a>`:''}</span></div>`).join('');
+  $('#plist').innerHTML=(wt.length?`<div class="wt"><div class="wth"><b>Ruang tunggu (${wt.length})</b><a href="#" data-aa="1">Izinkan semua</a></div>${wt.map(([id,nm])=>`<div class="pr"><span>⏳ ${esc(nm)}</span><span><a href="#" data-ad="${esc(id)}">izinkan</a> <a href="#" data-rj="${esc(id)}">tolak</a></span></div>`).join('')}</div>`:'')+ps.map(p=>`<div class="pr"><span>${S.pins.includes(p.identity)?'📌 ':''}${S.hands[p.identity]?'✋ ':''}${esc(p.name||'Peserta')}${p===lp?' (Anda)':''}${isHost(p)?' · Host':''}</span><span>${p.isMicrophoneEnabled?'🎤':'🔇'} <a href="#" data-p="${esc(p.identity)}">${S.pins.includes(p.identity)?'lepas pin':'pin'}</a>${S.host&&p!==lp?` <a href="#" data-m="${esc(p.identity)}">mute</a><a href="#" data-k="${esc(p.identity)}">keluarkan</a>`:''}</span></div>`).join('');
 }
 function addMsg(n,t){const m=$('.msgs');if(!m)return;const p=document.createElement('p');p.innerHTML=`<b>${esc(n)}:</b> ${esc(t)}`;m.appendChild(p);m.scrollTop=m.scrollHeight}
 function fly(e){const d=document.createElement('div');d.className='fl';d.textContent=e;d.style.left=(30+Math.random()*40)+'%';document.body.appendChild(d);setTimeout(()=>d.remove(),2500)}
 async function leave(msg){
-  if(msg==='all'){msg=null;await send({t:'cmd',c:'end'});await new Promise(r=>setTimeout(r,400))}
-  S.left=true;clearInterval(tick);const dur=Math.max(1,Math.round((Date.now()-t0)/60000));
-  fxReset();try{room.disconnect()}catch(e){}document.querySelectorAll('audio[data-a]').forEach(a=>a.remove());T.clear();document.body.classList.remove('minib');
-  app.innerHTML=`<div class="wrap" style="max-width:520px;text-align:center"><div class="card"><h2>${esc(msg||'Meeting selesai')}</h2><p class="mut">Durasi ${dur} menit.</p><button class="btn" id="hh">Kembali ke Beranda</button></div></div>`;
+  if(msg==='all'){msg=null;await sendAll({t:'cmd',c:'end'});await new Promise(r=>setTimeout(r,400))}
+  S.left=true;clearInterval(tick);clearTimeout(S.jt);const dur=Math.max(1,Math.round((Date.now()-t0)/60000));
+  fxReset();try{wl&&wl.release()}catch(e){}wl=null;document.querySelectorAll('.modal,.pop,#aud').forEach(x=>x.remove());
+  try{if(document.pictureInPictureElement)document.exitPictureInPicture().catch(()=>{})}catch(e){}
+  try{room.disconnect()}catch(e){}document.querySelectorAll('audio[data-a]').forEach(a=>a.remove());T.clear();document.body.classList.remove('minib');
+  app.innerHTML=`<div class="wrap" style="max-width:520px;text-align:center"><div class="card"><h2>${esc(msg||'Meeting selesai')}</h2>${S.admitted?'<p class="mut">Durasi '+dur+' menit.</p>':''}<button class="btn" id="hh">Kembali ke Beranda</button></div></div>`;
   $('#hh').onclick=home;
 }
-function fillTo(){const s=$('#cto');if(!s||!room)return;const cur=s.value,h='<option value="">Semua</option>'+[...room.remoteParticipants.values()].map(p=>`<option value="${esc(p.identity)}">${esc(p.name||'Peserta')}</option>`).join('');if(s.dataset.h===h)return;s.dataset.h=h;s.innerHTML=h;s.value=[...s.options].some(x=>x.value===cur)?cur:''}
+function fillTo(){const s=$('#cto');if(!s||!room)return;const cur=s.value,h='<option value="">Semua</option>'+rlist().map(p=>`<option value="${esc(p.identity)}">${esc(p.name||'Peserta')}</option>`).join('');if(s.dataset.h===h)return;s.dataset.h=h;s.innerHTML=h;s.value=[...s.options].some(x=>x.value===cur)?cur:''}
 const it=(a,v,t,on)=>`<div class="it" data-a="${a}" data-v="${esc(v||'')}">${on?'✓ ':'&nbsp;&nbsp;&nbsp;'}${esc(t)}</div>`;
 function pop(anchor,html,down){document.querySelectorAll('.pop').forEach(x=>x.remove());const a=$('#'+anchor);if(!a)return;const r=a.getBoundingClientRect(),d=document.createElement('div');d.className='pop';d.innerHTML=html;
   d.onclick=e=>{const x=e.target.closest('[data-a]');if(!x)return;d.remove();act(x.dataset.a,x.dataset.v)};document.body.appendChild(d);
@@ -366,6 +477,7 @@ async function devs(kind,title){let ds=[];try{ds=await Room.getLocalDevices(kind
   return `<div class="hd">${title}</div>`+(ds.map(d=>it('dev',kind+'|'+d.deviceId,d.label||'Perangkat',d.deviceId===c)).join('')||'<div class="it">Tidak tersedia</div>')}
 async function act(a,v){
   if(await fxAct(a,v)){update();if(S.panel==='fx')renderFx();return}
+  if(hostAct(a)){update();return}
   if(a==='view'){S.view=v;S.page=0;S.mx=''}else if(a==='unpinall'){S.pins=[]}
   else if(a==='hs')S.hideSelf=!S.hideSelf;else if(a==='hn')S.hideNV=!S.hideNV;else if(a==='tm')S.timer=!S.timer;
   else if(a==='fs'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})}
@@ -383,10 +495,27 @@ async function rec(){
     st.getVideoTracks()[0].onended=()=>{if(mr.state!=='inactive')mr.stop()};
     mr.start();S.mr=mr;S.rec=true;send({t:'chat',m:'⏺️ '+S.name+' mulai merekam meeting'});toast('Merekam. Pilih tab NexaMeet ini dan centang bagikan audio.');update()}
   catch(e){toast('Recording dibatalkan atau tidak didukung browser ini')}}
-function info(){const m=document.createElement('div');m.className='modal';m.onclick=()=>m.remove();const h=[room.localParticipant,...room.remoteParticipants.values()].find(isHost);
-  m.innerHTML=`<div><b>Info meeting</b><br>Meeting ID: ${fmt(S.mid)}<br>Passcode: ${esc(S.pass)}<br>Host: ${esc(h?h.name:'-')}<br>Peserta: ${room.remoteParticipants.size+1}<br><small>Di damel ku Usep Zaenal Mutaqin Ver.08112026<br>Ketuk di mana saja untuk menutup</small></div>`;document.body.appendChild(m)}
+function info(){
+  document.querySelectorAll('.modal').forEach(x=>x.remove());
+  const m=document.createElement('div');m.className='modal';
+  const h=plist().find(isHost),link=inviteLink();
+  m.innerHTML=`<div class="inf"><b>Info meeting</b>
+<div class="ir"><span>Meeting ID</span><b>${fmt(S.mid)}</b></div>
+<div class="ir"><span>Passcode</span><b>${esc(S.pass)}</b></div>
+<div class="ir"><span>Host</span><b>${esc(h?h.name:'-')}</b></div>
+<div class="ir"><span>Peserta</span><b>${plist().length}</b></div>
+${S.lock?'<div class="ir"><span>Status</span><b>🔒 Dikunci</b></div>':''}
+<div class="fxh" style="margin-top:8px">Link undangan (peserta cukup mengisi nama)</div><input id="ilk" readonly value="${esc(link)}">
+<div class="ib"><button class="btn" id="icp">Salin undangan</button><button class="btn alt" id="icl">Salin link</button><button class="btn alt" id="icx">Tutup</button></div>
+<small>Di damel ku Usep Zaenal Mutaqin Ver.08112026</small></div>`;
+  m.onclick=e=>{if(e.target===m)m.remove()};
+  document.body.appendChild(m);
+  $('#icx').onclick=()=>m.remove();
+  $('#icp').onclick=async()=>toast(await copyTxt(inviteText())?'Undangan disalin':'Gagal menyalin');
+  $('#icl').onclick=async()=>toast(await copyTxt(link)?'Link disalin':'Gagal menyalin');
+  $('#ilk').onfocus=e=>e.target.select()}
 function setMini(on){const r=$('#room');if(!r)return;r.classList.toggle('mini',on);document.body.classList.toggle('minib',on);
-  if(on){S.mxPrev=S.mx;const ps=[...room.remoteParticipants.values()],sp=ps.find(p=>p.identity===S.spk)||ps[0]||room.localParticipant;S.mx='c:'+sp.identity}
+  if(on){S.mxPrev=S.mx;const ps=rlist(),sp=ps.find(p=>p.identity===S.spk)||ps[0]||room.localParticipant;S.mx='c:'+sp.identity}
   else S.mx=S.mxPrev||'';update()}
 async function pip(){
   try{
@@ -533,6 +662,8 @@ function loadUpload(file){
     im.onerror=()=>toast('Gambar tidak bisa dibaca');im.src=r.result};
   r.readAsDataURL(file)}
 
+/* link undangan dibuka/diganti saat halaman beranda sedang terbuka: tampilkan ulang beranda sesuai mode */
+addEventListener('hashchange',()=>{if(!$('#jn'))return;const n=$('#n');if(n)S.name=n.value.trim();home()});
 /* responsif: hitung ulang tata letak saat layar diputar / ukuran berubah; panah keyboard untuk pindah halaman galeri */
 addEventListener('resize',()=>update());addEventListener('orientationchange',()=>setTimeout(update,200));
 addEventListener('keydown',e=>{const st=$('#stage');if(!room||S.left||!st||!st.classList.contains('g'))return;
