@@ -2,7 +2,7 @@
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NexaMeet</title>
-<meta name="author" content="Di damel ku Usep Zaenal Mutaqin Ver.08112026">
+<meta name="author" content="Di damel ku Usep Zaenal Mutaqin Ver.11112026">
 <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.8.1/dist/livekit-client.umd.min.js"></script>
 <style>
 :root{--pri:#2563EB;--bg:#F8FAFC;--card:#fff;--tx:#1E293B;--mut:#64748B;--dan:#DC2626;--bd:#E2E8F0}
@@ -143,7 +143,7 @@ let room,tick,t0=0,raf=0,sig='',wl=null;const T=new Map();
 const DEFAULT_API='https://nexameet-token.usepzaenalmutaqin092.workers.dev';
 function getApi(){let a=DEFAULT_API;try{a=localStorage.getItem('nx_api')||a}catch(e){}
   if(!a){a=(prompt('Tempel URL Worker token')||'').trim();try{a&&localStorage.setItem('nx_api',a)}catch(e){}}return a}
-function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),Math.max(3200,String(t).length*70))}
 const isHost=p=>{try{return JSON.parse(p.metadata||'{}').role==='host'}catch(e){return false}};
 
 /* ---- Link undangan: https://.../#join=ID.PASSCODE -> beranda hanya berisi nama, meeting ID, passcode (tanpa New Meeting) ---- */
@@ -157,7 +157,7 @@ function home(){
   <div class="card"><label>Nama Anda</label><input id="n" value="${esc(S.name)}" placeholder="Contoh: Usep">
   ${inv?'':'<button class="btn" id="nm" style="width:100%">📹 New Meeting</button><hr style="border:0;border-top:1px solid var(--bd);margin:16px 0">'}
   <label>Meeting ID</label><input id="id" inputmode="numeric" placeholder="123 4567 8901" value="${inv&&inv.id?fmt(inv.id):''}"><label>Passcode</label><input id="pc" inputmode="numeric" value="${inv?esc(inv.pass):''}">
-  <button class="btn${inv?'':' alt'}" id="jn" style="width:100%">Join Meeting</button></div></div><p class="mut" style="text-align:center;font-size:13px;margin-top:28px">Di damel ku Usep Zaenal Mutaqin Ver.08112026</p></div>`;
+  <button class="btn${inv?'':' alt'}" id="jn" style="width:100%">Join Meeting</button></div></div><p class="mut" style="text-align:center;font-size:13px;margin-top:28px">Di damel ku Usep Zaenal Mutaqin Ver.11112026</p></div>`;
   const go=async action=>{const n=$('#n').value.trim();if(!n)return toast('Isi nama dulu');S.name=n;
     if(action==='join'){S.mid=$('#id').value.replace(/\D/g,'');S.pass=$('#pc').value.trim();if(S.mid.length<8)return toast('Meeting ID tidak valid')}
     const b=$(action==='create'?'#nm':'#jn'),old=b.textContent;b.disabled=true;b.textContent='Menghubungkan...';
@@ -169,11 +169,11 @@ async function enter(action){
   let d;try{const r=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,name:S.name,room:S.mid,pass:S.pass})});d=await r.json();if(!r.ok)throw new Error(d.error||'Ditolak server')}
   catch(e){throw new Error(e.message==='Failed to fetch'?'Tidak bisa menghubungi server token':e.message)}
   S.mid=d.room;if(d.pass)S.pass=d.pass;S.host=action==='create';S.chat=[];S.hands={};S.panel=null;S.left=false;S.pins=[];S.page=0;S.mx='';S.spk='';fxReset();
-  S.wr=false;S.lock=false;S.hidePic=false;S.shareOk=true;S.wait=new Map();S.adm=new Set();S.admitted=false;S.sent=false;clearTimeout(S.jt);
+  S.wr=false;S.lock=false;S.hidePic=false;S.shareOk=true;S.wait=new Map();S.adm=new Set();S.admitted=false;S.sent=false;clearTimeout(S.jt);clearInterval(S.ji);clearInterval(S.rc);S.ack=false;S.lt=0;S.shBusy=false;
   room=new Room({adaptiveStream:true,dynacast:true,videoCaptureDefaults:{resolution:VideoPresets.h360}});
   const E=RoomEvent;
   [E.ParticipantConnected,E.ParticipantDisconnected,E.TrackMuted,E.TrackUnmuted,E.TrackSubscribed,E.LocalTrackPublished,E.LocalTrackUnpublished,E.ActiveSpeakersChanged,E.ParticipantMetadataChanged,E.ParticipantNameChanged].forEach(e=>room.on(e,update));
-  room.on(E.ParticipantConnected,()=>{if(!S.host&&!S.admitted)tryJoin()});
+  room.on(E.ParticipantConnected,p=>{if(!S.host&&!S.admitted)tryJoin();if(S.host&&!isHost(p))setTimeout(()=>{if(!S.left&&room&&room.remoteParticipants.has(p.identity))hostJoin(p)},1200)});
   room.on(E.ParticipantMetadataChanged,()=>{if(!S.host&&!S.admitted)tryJoin()});
   room.on(E.TrackPublished,pub=>{if(S.admitted){try{pub.setSubscribed(true)}catch(e){}}});
   /* S.adm sengaja TIDAK dikurangi di sini: saat koneksi putus-sambung (reconnect penuh) LiveKit memutus lalu menyambung ulang semua peserta,
@@ -192,13 +192,19 @@ async function enter(action){
   room.on(E.AudioPlaybackStatusChanged,()=>{if(S.admitted&&!S.left&&!room.canPlaybackAudio)audioPrompt()});
   room.on(E.LocalTrackPublished,pub=>{if(pub.source===Track.Source.Camera){FX.cur=null;applyFx();if(S.panel==='fx')setTimeout(attachPreview,300)}});
   /* host langsung masuk; peserta menyambung tanpa berlangganan audio/video dan tanpa mic/kamera sampai host mengizinkan */
-  await room.connect(d.url,d.token,{autoSubscribe:S.host});
+  try{await room.connect(d.url,d.token,{autoSubscribe:S.host})}catch(e){try{room.disconnect()}catch(_){}throw new Error('Tidak bisa terhubung ke server video. Kemungkinan kuota LiveKit bulan ini habis, atau jaringan memblokir koneksi. ('+((e&&e.message)||'error')+')')}
   if(S.host){S.adm.add(room.localParticipant.identity);S.admitted=true;await startRoom()}
-  else{waitScreen('Menghubungi host…');tryJoin();S.jt=setTimeout(()=>{if(!S.admitted&&!S.left)leave('Host tidak merespons. Pastikan host sudah membuka meeting, lalu coba lagi.')},15000)}
+  else{waitScreen('Menghubungi host…');S.t1=Date.now();S.ack=false;S.lt=0;tryJoin(1);clearInterval(S.ji);
+    S.ji=setInterval(()=>{if(S.admitted||S.left){clearInterval(S.ji);return}
+      if(Date.now()-S.t1>60000){leave('Host tidak merespons. Pastikan host masih berada di dalam meeting dan koneksi internet stabil, lalu coba lagi.');return}
+      if(S.ack)return;
+      const here=[...room.remoteParticipants.values()].some(isHost),e=$('#wmsg');
+      if(e)e.textContent=here?'Menghubungi host… (mencoba lagi)':'Menunggu host membuka meeting…';
+      tryJoin(1)},2500)}
 }
 /* pesan error perangkat yang jelas (bukan sekadar "diblokir") */
 function devErr(e,k){const n=(e&&e.name)||'',w=k==='cam'?'Kamera':'Mikrofon';
-  if(k==='scr')return toast('Berbagi layar dibatalkan atau tidak diizinkan');
+  if(k==='scr')return toast(n==='NotAllowedError'||n==='AbortError'?'Berbagi layar dibatalkan atau tidak diizinkan':'Berbagi layar gagal ('+(n||'error')+'). Coba lagi.');
   toast(n==='NotAllowedError'||n==='SecurityError'?w+' ditolak: izinkan akses '+w.toLowerCase()+' untuk situs ini di pengaturan browser'
     :n==='NotReadableError'||n==='AbortError'?w+' sedang dipakai aplikasi lain (tutup Zoom/aplikasi lain, lalu nyalakan lagi)'
     :n==='NotFoundError'||n==='OverconstrainedError'?w+' tidak ditemukan di perangkat ini':w+' tidak bisa diakses')}
@@ -216,6 +222,7 @@ async function startRoom(){
   if(S.left)return;
   t0=Date.now();clearInterval(tick);
   buildRoom();wakeLock();try{Promise.resolve(room.startAudio()).catch(()=>{})}catch(e){}
+  clearInterval(S.rc);S.rc=setInterval(()=>{if(!room||S.left||!S.admitted)return;room.remoteParticipants.forEach(p=>p.trackPublications.forEach(pb=>{if(!pb.isSubscribed){try{pb.setSubscribed(true)}catch(e){}}}))},4000);
   tick=setInterval(()=>{const e=$('#clk');if(e){const s=Math.floor((Date.now()-t0)/1000);e.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}},1000);
 }
 /* send tanpa tujuan = hanya ke peserta yang sudah diizinkan masuk; peserta di ruang tunggu tidak menerima chat/pesan lain */
@@ -243,11 +250,11 @@ const shown=p=>!room||p===room.localParticipant||isHost(p)||S.adm.has(p.identity
 const rlist=()=>[...room.remoteParticipants.values()].filter(shown);
 const plist=()=>[room.localParticipant,...rlist()];
 function bstate(){if(!S.host||!room)return;send({t:'state',adm:[...S.adm],wr:S.wr?1:0,lock:S.lock?1:0,hp:S.hidePic?1:0,so:S.shareOk?1:0})}
-function tryJoin(){if(S.host||S.admitted||S.sent||S.left||!room)return;const h=[...room.remoteParticipants.values()].find(isHost);if(h){S.sent=true;send({t:'join'},h.identity)}}
+function tryJoin(f){if(S.host||S.admitted||S.left||!room)return;if(!f&&Date.now()-(S.lt||0)<1500)return;const h=[...room.remoteParticipants.values()].find(isHost);if(h){S.lt=Date.now();send({t:'join'},h.identity)}}
 function hostJoin(p){
   if(!S.host)return;const id=p.identity,nm=p.name||'Peserta';
   if(S.adm.has(id)){send({t:'admit'},id);bstate();return}
-  if(S.wait.has(id))return;
+  if(S.wait.has(id)){send({t:'wait'},id);return}
   if(S.lock){send({t:'deny',c:'lock'},id);return}
   if(S.wr){S.wait.set(id,nm);send({t:'wait'},id);toast(nm+' menunggu di ruang tunggu');update()}
   else{doAdmit(id);toast(nm+' bergabung');update()}}
@@ -258,12 +265,12 @@ function reject(id){if(!S.wait.has(id))return;S.wait.delete(id);send({t:'deny',c
 function waitScreen(msg){app.innerHTML=`<div class="wrap" style="max-width:520px;text-align:center"><div class="logo">Nexa<span>Meet</span></div><div class="card"><h2>Ruang tunggu</h2><p class="mut" id="wmsg">${esc(msg)}</p><p class="mut" style="font-size:13px">Meeting ID ${esc(fmt(S.mid))}</p><button class="btn alt" id="wx">Batal</button></div></div>`;$('#wx').onclick=()=>leave('Anda keluar dari ruang tunggu')}
 function hostMsg(d){
   if(S.host)return;
-  if(d.t==='wait'){clearTimeout(S.jt);const e=$('#wmsg');if(e)e.textContent='Menunggu host mengizinkan Anda masuk…'}
+  if(d.t==='wait'){S.ack=true;clearTimeout(S.jt);const e=$('#wmsg');if(e)e.textContent='Menunggu host mengizinkan Anda masuk…'}
   else if(d.t==='deny')leave(d.c==='lock'?'Meeting ini sedang dikunci oleh host.':'Host tidak mengizinkan Anda masuk.');
   else if(d.t==='admit')onAdmitted();
   else if(d.t==='state')applyState(d)}
 async function onAdmitted(){
-  if(S.admitted||S.left)return;S.admitted=true;clearTimeout(S.jt);
+  if(S.admitted||S.left)return;S.admitted=true;clearTimeout(S.jt);clearInterval(S.ji);
   room.remoteParticipants.forEach(p=>p.trackPublications.forEach(pub=>{try{pub.setSubscribed(true)}catch(e){}}));
   await startRoom()}
 function applyState(d){
@@ -302,7 +309,7 @@ function buildRoom(){
   f('bv',()=>tog(()=>lp().setCameraEnabled(!lp().isCameraEnabled),'cam'));
   f('bs',()=>{if(!S.host&&!S.shareOk&&!lp().isScreenShareEnabled)return toast('Host tidak mengizinkan berbagi layar');
     if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia)return toast('Berbagi layar tidak didukung di perangkat/browser ini (umumnya hanya tersedia di laptop/PC)');
-    tog(()=>lp().setScreenShareEnabled(!lp().isScreenShareEnabled),'scr')});
+    shareToggle()});
   f('bp',()=>openPanel('part'));f('bc',()=>openPanel('chat'));
   f('br',()=>{const m=$('#menubox');m.innerHTML=m.innerHTML?'':`<div class="menu">${['👍','👏','❤️','😂','🎉'].map(e=>`<button data-e="${e}">${e}</button>`).join('')}</div>`});
   f('bh',()=>{const id=lp().identity,v=!S.hands[id];S.hands[id]=v;send({t:'hand',v:v?1:0});update()});
@@ -460,13 +467,23 @@ function addMsg(n,t){const m=$('.msgs');if(!m)return;const p=document.createElem
 function fly(e){const d=document.createElement('div');d.className='fl';d.textContent=e;d.style.left=(30+Math.random()*40)+'%';document.body.appendChild(d);setTimeout(()=>d.remove(),2500)}
 async function leave(msg){
   if(msg==='all'){msg=null;await sendAll({t:'cmd',c:'end'});await new Promise(r=>setTimeout(r,400))}
-  S.left=true;clearInterval(tick);clearTimeout(S.jt);const dur=Math.max(1,Math.round((Date.now()-t0)/60000));
+  S.left=true;clearInterval(tick);clearTimeout(S.jt);clearInterval(S.ji);clearInterval(S.rc);const dur=Math.max(1,Math.round((Date.now()-t0)/60000));
   fxReset();try{wl&&wl.release()}catch(e){}wl=null;document.querySelectorAll('.modal,.pop,#aud').forEach(x=>x.remove());
   try{if(document.pictureInPictureElement)document.exitPictureInPicture().catch(()=>{})}catch(e){}
   try{room.disconnect()}catch(e){}document.querySelectorAll('audio[data-a]').forEach(a=>a.remove());T.clear();document.body.classList.remove('minib');
   app.innerHTML=`<div class="wrap" style="max-width:520px;text-align:center"><div class="card"><h2>${esc(msg||'Meeting selesai')}</h2>${S.admitted?'<p class="mut">Durasi '+dur+' menit.</p>':''}<button class="btn" id="hh">Kembali ke Beranda</button></div></div>`;
   $('#hh').onclick=home;
 }
+async function shareToggle(){
+  if(S.shBusy)return;S.shBusy=true;const l=room.localParticipant;
+  try{
+    if(l.isScreenShareEnabled){await l.setScreenShareEnabled(false)}
+    else{
+      for(const src of [Track.Source.ScreenShare,Track.Source.ScreenShareAudio]){const pb=l.getTrackPublication(src);if(pb&&pb.track){try{await l.unpublishTrack(pb.track,true)}catch(e){}}}
+      await l.setScreenShareEnabled(true,{audio:false,contentHint:'detail'})
+    }
+  }catch(e){devErr(e,'scr')}
+  S.shBusy=false;update()}
 function fillTo(){const s=$('#cto');if(!s||!room)return;const cur=s.value,h='<option value="">Semua</option>'+rlist().map(p=>`<option value="${esc(p.identity)}">${esc(p.name||'Peserta')}</option>`).join('');if(s.dataset.h===h)return;s.dataset.h=h;s.innerHTML=h;s.value=[...s.options].some(x=>x.value===cur)?cur:''}
 const it=(a,v,t,on)=>`<div class="it" data-a="${a}" data-v="${esc(v||'')}">${on?'✓ ':'&nbsp;&nbsp;&nbsp;'}${esc(t)}</div>`;
 function pop(anchor,html,down){document.querySelectorAll('.pop').forEach(x=>x.remove());const a=$('#'+anchor);if(!a)return;const r=a.getBoundingClientRect(),d=document.createElement('div');d.className='pop';d.innerHTML=html;
@@ -507,7 +524,7 @@ function info(){
 ${S.lock?'<div class="ir"><span>Status</span><b>🔒 Dikunci</b></div>':''}
 <div class="fxh" style="margin-top:8px">Link undangan (peserta cukup mengisi nama)</div><input id="ilk" readonly value="${esc(link)}">
 <div class="ib"><button class="btn" id="icp">Salin undangan</button><button class="btn alt" id="icl">Salin link</button><button class="btn alt" id="icx">Tutup</button></div>
-<small>Di damel ku Usep Zaenal Mutaqin Ver.08112026</small></div>`;
+<small>Di damel ku Usep Zaenal Mutaqin Ver.11112026</small></div>`;
   m.onclick=e=>{if(e.target===m)m.remove()};
   document.body.appendChild(m);
   $('#icx').onclick=()=>m.remove();
